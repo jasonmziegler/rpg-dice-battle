@@ -1,0 +1,19 @@
+body {
+    font-family: 'Hind Guntur', sans-serif;
+}
+h1 {
+    font-family: 'Germania One', cursive;
+}
+
+#player-0-panel {
+    /*float: left;*/
+}
+
+#player-1-panel {
+    /*float: left;*/
+}
+
+.player-0-name.active, .player-1-name.active {
+    color: red;
+}
+

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>RPG Dice Battle</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" media="screen" href="main.css">
+    <link href="https://fonts.googleapis.com/css?family=Germania+One|Hind+Guntur" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+    
+</head>
+<body>
+    <h1>RPG Dice Battle</h1>
+    <h4>by Jason Ziegler</h4>
+    <div id="root">
+        <div>
+            <div id="player-0-panel">
+                    <div class="player-0-name">Player 1</div>
+                    <div class="player-0-health">99</div>
+                    <div class="player-0-special">99</div>
+                    <div class="player-0-avatar">(ง°ل͜°)<span>&nbsp;</span>ง</div>
+                    <!--div class="player-0-dice">
+                        <i class="fas fa-dice-one"></i>
+                    </div-->
+                    <div class="player-0-action-menu">
+                        <div class="player-0-attack-menu">
+                            <ul>
+                                <li>
+                                    <button class="attack-button">&#9876;Attack</button>
+                                    <!--button class="focus-button"><i class="fas fa-bullseye"></i> Focus Attack (2 SP)</button-->
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="player-0-defend-menu">
+                            <ul>
+                                <li>
+                                    <button class="defend-button"><i class="fas fa-shield-alt"></i>Defend</button>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div id="player-1-panel">
+                    <div class="player-1-name">Player 2</div>
+                    <div class="player-1-health">99</div>
+                    <div class="player-1-special">99</div>
+                    <div class="player-1-avatar">ლ<span>&nbsp;</span>(´ڡ`ლ)</div>
+                    <!--div class="player-1-dice">
+                        <i class="fas fa-dice-one"></i>
+                    </div-->
+                    <div class="player-1-menu">
+                        <div class="player-1-attack-menu">
+                            <ul>
+                                <li>
+                                    <button class="attack-button">&#9876;Attack</button>
+                                    <!--button class="focus-button"><i class="fas fa-bullseye"></i> Focus Attack (2 SP)</button-->
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="player-1-defend-menu">
+                            <ul>
+                                <li>
+                                    <button class="defend-button"><i class="fas fa-shield-alt"></i>Defend</button>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+        </div>
+        
+        <div id="log-container">
+            <h2>Game Log</h2>
+            <div class="log-display">
+                <p id="first-log">Welcome to RPG Dice Battle!</p>
+            </div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>
