@@ -175,7 +175,7 @@ function init() {
             resultText.appendChild(document.createTextNode("Player 1 is unscathed."));
             logDisplay.insertBefore(resultText, logDisplay.firstChild);
         }
-        if (hitPoints[1] <= 0) {
+        if (hitPoints[0] <= 0) {
             hideAllOptions();
             resultText = document.createElement("p");
             resultText.appendChild(document.createTextNode("GAME OVER - Player 1 has been slain."));
