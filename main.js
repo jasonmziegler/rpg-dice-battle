@@ -29,9 +29,23 @@ let specialPoints = [0, 0];
 let attackingPlayer = 0;
 //  defending player is always the opposite of the attacking player
 let defendingPlayer = (attackingPlayer === 0) ? 1 : 0;
-let attackButtons, defendButtons;
+
 let player1DiceNode, player2DiceNode, logDisplay;
 
+let attackButtons = document.querySelectorAll(".attack-button");
+let focusButtons = document.querySelectorAll(".attack-button-focus");
+let defendButtons = document.querySelectorAll(".defend-button");
+let diamondButtons = document.querySelectorAll(".defend-button-diamond");
+let healButtons = document.querySelectorAll(".spell-button-heal");
+let fireButtons = document.querySelectorAll(".spell-button-fire");
+let allButtons = {
+    attackButtons: attackButtons,
+    focusButtons: focusButtons,
+    defendButtons: defendButtons,
+    diamondButtons: diamondButtons,
+    healButtons: healButtons,
+    fireButtons: fireButtons
+};
 function rollDice(numDice, sides) {
     let diceArray = [];
     for (let i = 0; i < numDice; i++) {
@@ -105,22 +119,9 @@ function init() {
     document.querySelector('.player-1-name').classList.remove('active');
     
     // bind all event listeners
-    let attackButtons = document.querySelectorAll(".attack-button");
-    let focusButtons = document.querySelectorAll(".attack-button-focus");
-    let defendButtons = document.querySelectorAll(".defend-button");
-    let diamondButtons = document.querySelectorAll(".defend-button-diamond");
-    let healButtons = document.querySelectorAll(".spell-button-heal");
-    let fireButtons = document.querySelectorAll(".spell-button-fire");
-    let allButtons = {
-        attackButtons: attackButtons,
-        focusButtons: focusButtons,
-        defendButtons: defendButtons,
-        diamondButtons: diamondButtons,
-        healButtons: healButtons,
-        fireButtons: fireButtons
-    }
+   
 
-    attackButtons[0].addEventListener("click", function() {
+    allButtons.attackButtons[0].addEventListener("click", function() {
         rolls[0] = rollDice(1,SIDES);
         //console.log("Player 1 Attack Roll", rolls[0]);
         let testNode = document.createElement("p");
@@ -141,7 +142,7 @@ function init() {
 
     });
 
-    attackButtons[1].addEventListener("click", function() {
+    allButtons.attackButtons[1].addEventListener("click", function() {
         rolls[1] = rollDice(1,SIDES);
         //console.log("Player 2 Attack Roll", rolls[1]);
         let testNode = document.createElement("p");
@@ -162,7 +163,7 @@ function init() {
     });
 
 //    let defendButtons = document.querySelectorAll(".defend-button");
-    defendButtons[0].addEventListener("click", function() {
+    allButtons.defendButtons[0].addEventListener("click", function() {
         //console.log("Player 1 Defend", defendingPlayer);
         rolls[0] = rollDice(1,SIDES);
         //console.log("Player 1 Defend", rolls[0]);
@@ -221,7 +222,7 @@ function init() {
         attackPhase();
     });
 
-    defendButtons[1].addEventListener("click", function() {
+    allButtons.defendButtons[1].addEventListener("click", function() {
         rolls[1] = rollDice(1,SIDES);
         //console.log("Player 2 Defend", rolls[1]);
         let testNode = document.createElement("p");
@@ -331,7 +332,7 @@ function determineStartingPlayer() {
 attackingPlayer = 0;
 }
 
-init();
+init(allButtons);
 determineStartingPlayer();
 hideAllOptions();
 attackPhase();
