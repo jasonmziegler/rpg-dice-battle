@@ -73,18 +73,16 @@ function sumDice(diceArray) {
 
 
 function hideAllOptions(allButtons) {
-    allButtons.attackButtons[0].parentNode.style.display = 'none';
-    allButtons.attackButtons[1].parentNode.style.display = 'none';
-    allButtons.focusButtons[0].parentNode.style.display = 'none';
-    allButtons.focusButtons[1].parentNode.style.display = 'none';
-    allButtons.defendButtons[0].parentNode.style.display = 'none';
-    allButtons.defendButtons[1].parentNode.style.display = 'none';
-    allButtons.diamondButtons[0].parentNode.style.display = 'none';
-    allButtons.diamondButtons[1].parentNode.style.display = 'none';
-    allButtons.healButtons[0].parentNode.style.display = 'none';
-    allButtons.healButtons[1].parentNode.style.display = 'none';
-    allButtons.fireButtons[0].parentNode.style.display = 'none';
-    allButtons.fireButtons[1].parentNode.style.display = 'none';
+    //AllButtons is an object with node lists of the types of interactive buttons. 
+    //the following for loop sets each display value to none
+    //which hides all of the buttons.
+    for (const property in allButtons) {
+        if (allButtons.hasOwnProperty(property)) {
+                for (let x=0; x< allButtons[property].length; x++) {
+                allButtons[property][x].parentNode.style.display = 'none';
+            }
+        }
+    }
 }
 
 
