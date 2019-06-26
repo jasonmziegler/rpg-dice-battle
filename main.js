@@ -46,6 +46,8 @@ let allButtons = {
     healButtons: healButtons,
     fireButtons: fireButtons
 };
+
+
 function rollDice(numDice, sides) {
     let diceArray = [];
     for (let i = 0; i < numDice; i++) {
@@ -70,26 +72,19 @@ function sumDice(diceArray) {
  }
 
 
-function hideAllOptions() {
-    let attackButtons = document.querySelectorAll(".attack-button");
-    let focusButtons = document.querySelectorAll(".attack-button-focus");
-    let defendButtons = document.querySelectorAll(".defend-button");
-    let diamondButtons = document.querySelectorAll(".defend-button-diamond");
-    let healButtons = document.querySelectorAll(".spell-button-heal");
-    let fireButtons = document.querySelectorAll(".spell-button-fire");
-    
-    attackButtons[0].parentNode.style.display = 'none';
-    attackButtons[1].parentNode.style.display = 'none';
-    focusButtons[0].parentNode.style.display = 'none';
-    focusButtons[1].parentNode.style.display = 'none';
-    defendButtons[0].parentNode.style.display = 'none';
-    defendButtons[1].parentNode.style.display = 'none';
-    diamondButtons[0].parentNode.style.display = 'none';
-    diamondButtons[1].parentNode.style.display = 'none';
-    healButtons[0].parentNode.style.display = 'none';
-    healButtons[1].parentNode.style.display = 'none';
-    fireButtons[0].parentNode.style.display = 'none';
-    fireButtons[1].parentNode.style.display = 'none';
+function hideAllOptions(allButtons) {
+    allButtons.attackButtons[0].parentNode.style.display = 'none';
+    allButtons.attackButtons[1].parentNode.style.display = 'none';
+    allButtons.focusButtons[0].parentNode.style.display = 'none';
+    allButtons.focusButtons[1].parentNode.style.display = 'none';
+    allButtons.defendButtons[0].parentNode.style.display = 'none';
+    allButtons.defendButtons[1].parentNode.style.display = 'none';
+    allButtons.diamondButtons[0].parentNode.style.display = 'none';
+    allButtons.diamondButtons[1].parentNode.style.display = 'none';
+    allButtons.healButtons[0].parentNode.style.display = 'none';
+    allButtons.healButtons[1].parentNode.style.display = 'none';
+    allButtons.fireButtons[0].parentNode.style.display = 'none';
+    allButtons.fireButtons[1].parentNode.style.display = 'none';
 }
 
 
@@ -137,7 +132,7 @@ function init() {
         testNode.appendChild(document.createTextNode("(" + sumDice(rolls[0]) + ")"));
         logDisplay.insertBefore(testNode, logDisplay.firstChild);
         //begin defend phase
-        hideAllOptions();
+        hideAllOptions(allButtons);
         defendPhase();
 
     });
@@ -158,7 +153,7 @@ function init() {
         testNode.appendChild(document.createTextNode("(" + sumDice(rolls[1]) + ")"));
         logDisplay.insertBefore(testNode, logDisplay.firstChild);
         //begin defend phase
-        hideAllOptions();
+        hideAllOptions(allButtons);
         defendPhase();
     });
 
@@ -208,7 +203,7 @@ function init() {
             logDisplay.insertBefore(resultText, logDisplay.firstChild);
         }
         if (hitPoints[0] <= 0) {
-            hideAllOptions();
+            hideAllOptions(allButtons);
             resultText = document.createElement("p");
             resultText.appendChild(document.createTextNode("GAME OVER - Player 1 has been slain."));
             logDisplay.insertBefore(resultText, logDisplay.firstChild);
@@ -218,7 +213,7 @@ function init() {
         ////// end game 
         //// else next round
         alternateAttackingPlayer();
-        hideAllOptions();
+        hideAllOptions(allButtons);
         attackPhase();
     });
 
@@ -268,7 +263,7 @@ function init() {
             logDisplay.insertBefore(resultText, logDisplay.firstChild);
         }
         if (hitPoints[1] <= 0) {
-            hideAllOptions();
+            hideAllOptions(allButtons);
             resultText = document.createElement("p");
             resultText.appendChild(document.createTextNode("GAME OVER - Player 2 has been slain."));
             logDisplay.insertBefore(resultText, logDisplay.firstChild);
@@ -278,12 +273,12 @@ function init() {
         ////// end game 
         //// else next round
         alternateAttackingPlayer();
-        hideAllOptions();
+        hideAllOptions(allButtons);
         attackPhase();
     });
 
     // hide all menus and buttons 
-    hideAllOptions();
+    hideAllOptions(allButtons);
     // reset hp
     hitPoints = [ 20, 20];
     document.querySelector(".player-0-health").textContent = hitPoints[0];
@@ -334,7 +329,7 @@ attackingPlayer = 0;
 
 init(allButtons);
 determineStartingPlayer();
-hideAllOptions();
+hideAllOptions(allButtons);
 attackPhase();
 
 // add event listener to new game function
