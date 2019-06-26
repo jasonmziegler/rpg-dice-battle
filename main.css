@@ -1,3 +1,13 @@
+/* 
+WIREFRAME
+*/
+#player-0-panel, #player-1-panel, #log-container {
+    border: 1px solid black;
+}
+
+/*
+MAIN
+*/
 body {
     font-family: 'Hind Guntur', sans-serif;
 }

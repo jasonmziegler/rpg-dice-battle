@@ -10,14 +10,7 @@ var playerController = (function() {
         
     }
 
-    // function rollDice(numDice, sides) {
-    //     let diceArray = [];
-    //     for (let i = 0; i < numDice; i++) {
-    //         let dice = Math.floor(Math.random() * sides) +1;
-    //         diceArray.push(dice);
-    //     }
-    //     return diceArray;
-    // }
+    
 
     // function sumDice(diceArray) {
     //     let numDice = diceArray.length;
@@ -40,7 +33,19 @@ var playerController = (function() {
     // }
 
     
-    return {};
+    return {
+        getData: function() {
+            return data;
+        },
+        rollDice: function (numDice) {
+            let diceArray = [];
+            for (let i = 0; i < numDice; i++) {
+                let dice = Math.floor(Math.random() * SIDES) +1;
+                diceArray.push(dice);
+            }
+            return diceArray;
+        }
+    };
 })();
 
 var UIController = (function() {
@@ -55,14 +60,6 @@ var UIController = (function() {
         attackButton: ".attack-button",
         defendButton: ".defend-button"
     };
-    
-
-    // function hideAllOptions() {
-    //     document.querySelectorAll(".attack-button")[0].parentNode.style.display = 'none';
-    //     document.querySelectorAll(".attack-button")[1].parentNode.style.display = 'none';
-    //     document.querySelectorAll(".defend-button")[0].parentNode.style.display = 'none';
-    //     document.querySelectorAll(".defend-button")[1].parentNode.style.display = 'none';
-    // }
 
     // function convertNumberToText(num) {
     //     switch(num) {
@@ -86,6 +83,7 @@ var UIController = (function() {
         getDOMstrings: function() {
             return DOMstrings;
         },
+
         hideAllOptions: function() {
             document.querySelectorAll(DOMstrings.attackButton)[0].parentNode.style.display = 'none';
             document.querySelectorAll(DOMstrings.attackButton)[1].parentNode.style.display = 'none';
@@ -110,8 +108,10 @@ var controller = (function(UICtrl, PlayerCtrl) {
     }
 
     var ctrlAttack = function(player) {
+        //rolls = PlayerCtrl.getData().rolls;
+
         console.log("Attack Clicked");
-        // rolls[0] = rollDice(1,SIDES);
+        rolls[player] = rollDice(1);
         // //console.log("Player 1 Attack Roll", rolls[0]);
         // let testNode = document.createElement("p");
         // testNode.appendChild(document.createTextNode("Player 1 Attacks for "));

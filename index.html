@@ -5,77 +5,118 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>RPG Dice Battle</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" media="screen" href="main.css">
     <link href="https://fonts.googleapis.com/css?family=Germania+One|Hind+Guntur" rel="stylesheet">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
     
+    
 </head>
 <body>
-    <h1>RPG Dice Battle</h1>
-    <h4>by Jason Ziegler</h4>
-    <div id="root">
-        <div>
-            <div id="player-0-panel">
-                    <div class="player-0-name">Player 1</div>
-                    <div class="player-0-health">99</div>
-                    <div class="player-0-special">99</div>
-                    <div class="player-0-avatar">(ง°ل͜°)<span>&nbsp;</span>ง</div>
-                    <!--div class="player-0-dice">
-                        <i class="fas fa-dice-one"></i>
-                    </div-->
-                    <div class="player-0-action-menu">
-                        <div class="player-0-attack-menu">
-                            <ul>
-                                <li>
-                                    <button class="attack-button">&#9876;Attack</button>
-                                    <!--button class="focus-button"><i class="fas fa-bullseye"></i> Focus Attack (2 SP)</button-->
-                                </li>
-                            </ul>
-                        </div>
-                        <div class="player-0-defend-menu">
-                            <ul>
-                                <li>
-                                    <button class="defend-button"><i class="fas fa-shield-alt"></i>Defend</button>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <div id="player-1-panel">
-                    <div class="player-1-name">Player 2</div>
-                    <div class="player-1-health">99</div>
-                    <div class="player-1-special">99</div>
-                    <div class="player-1-avatar">ლ<span>&nbsp;</span>(´ڡ`ლ)</div>
-                    <!--div class="player-1-dice">
-                        <i class="fas fa-dice-one"></i>
-                    </div-->
-                    <div class="player-1-menu">
-                        <div class="player-1-attack-menu">
-                            <ul>
-                                <li>
-                                    <button class="attack-button">&#9876;Attack</button>
-                                    <!--button class="focus-button"><i class="fas fa-bullseye"></i> Focus Attack (2 SP)</button-->
-                                </li>
-                            </ul>
-                        </div>
-                        <div class="player-1-defend-menu">
-                            <ul>
-                                <li>
-                                    <button class="defend-button"><i class="fas fa-shield-alt"></i>Defend</button>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-        </div>
-        
-        <div id="log-container">
-            <h2>Game Log</h2>
-            <div class="log-display">
-                <p id="first-log">Welcome to RPG Dice Battle!</p>
-            </div>
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <h1>
+                RPG Dice Battle
+                <small class="text-muted">by Jason Ziegler</small>
+            </h1>    
         </div>
     </div>
-    <script src="mvc-main.js"></script>
+    <div id="root">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="row">
+                        <div id="player-0-panel" class="col-6">
+                                <div class="player-0-name">Player 1</div>
+                                <div class="player-0-health-container">HP <span class="player-0-health">99</span></div>
+                                <div class="player-0-special-container">SP <span class="player-0-special">99</span></div>
+                                <div class="player-0-avatar">(ง°ل͜°)<span>&nbsp;</span>ง</div>
+                                <!--div class="player-0-dice">
+                                    <i class="fas fa-dice-one"></i>
+                                </div-->
+                                <div class="player-0-action-menu">
+                                        <div class="player-0-attack-menu">
+                                            <ul>
+                                                <li>
+                                                    <button class="attack-button">&#9876;Attack</button>
+                                                </li>
+                                                <li>
+                                                    <button class="attacl-button-focus"><i class="fas fa-bullseye"></i> Focus Attack (1 SP)</button>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <div class="player-0-defend-menu">
+                                            <ul>
+                                                <li>
+                                                    <button class="defend-button"><i class="fas fa-shield-alt"></i>Defend</button>
+                                                </li>
+                                                <li>
+                                                    <button class="defend-button-diamond"><i class="far fa-gem"></i>Diamond Skin (4 SP)</button>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <div class="player-0-spell-menu">
+                                            <ul>
+                                                <li><button class="spell-button-heal"><i class="fas fa-scroll"></i>Heal (2 SP)</button></li>
+                                                <li><button class="spell-button-fire"><i class="fas fa-fire-alt"></i> Fire (3 SP)</button></li>
+                                            </ul>
+                                        </div>
+                                </div>
+                        </div>
+                        <div id="player-1-panel" class="col-6">
+                            <div class="player-1-name">Player 2</div>
+                            <div class="player-1-health-container">HP <span class="player-1-health">99</span></div>
+                            <div class="player-1-special-container">SP <span class="player-1-special">99</span></div>
+                            <div class="player-1-avatar">ლ<span>&nbsp;</span>(´ڡ`ლ)</div>
+                            <!--div class="player-1-dice">
+                                <i class="fas fa-dice-one"></i>
+                            </div-->
+                            <div class="player-1-action-menu">
+                                <div class="player-1-attack-menu">
+                                    <ul>
+                                        <li>
+                                            <button class="attack-button">&#9876;Attack</button>
+                                        </li>
+                                        <li>
+                                            <button class="attacl-button-focus"><i class="fas fa-bullseye"></i> Focus Attack (1 SP)</button>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="player-1-defend-menu">
+                                    <ul>
+                                        <li>
+                                            <button class="defend-button"><i class="fas fa-shield-alt"></i>Defend</button>
+                                        </li>
+                                        <li>
+                                            <button class="defend-button-diamond"><i class="far fa-gem"></i>Diamond Skin (4 SP)</button>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="player-1-spell-menu">
+                                    <ul>
+                                        <li><button class="spell-button-heal"><i class="fas fa-scroll"></i>Heal (2 SP)</button></li>
+                                        <li><button class="spell-button-fire"><i class="fas fa-fire-alt"></i> Fire (3 SP)</button></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="log-container" class="col-md-4">
+                        <h2>Game Log</h2>
+                        <div class="log-display">
+                            <p id="first-log">Welcome to RPG Dice Battle!</p>
+                        </div>
+                    </div>
+            </div>            
+        </div>
+        
+        
+    </div>
+    <!--script src="main.js"></script-->
+    <!--script src="mvc-main.js"></script-->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 </body>
 </html>
