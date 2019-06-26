@@ -21,7 +21,10 @@ The first player to deal 20 dmg wins.
 // Evade (2 defense dice ) Cost: 6, Focus (2 attack dice) cost: 6, Heal Cost: 4(restore d6 HP), IronSkin (3 defense dice) cost: 8, Fireball (3 Attack dice) cost: 8
 
 const SIDES = 6;
-
+const FOCUS = 2;
+const HEAL = 2;
+const FIRE = 3;
+const DIAMOND = 3;
 //rolls[0] for player 0 and rolls[1] for player 1
 let rolls = [[],[]];
 let hitPoints = [ 20, 20];
@@ -154,6 +157,47 @@ function init() {
         hideAllOptions(allButtons);
         defendPhase();
     });
+
+    allButtons.focusButtons[0].addEventListener("click", function() {
+        rolls[0] = rollDice(FOCUS,SIDES);
+        //console.log("Player 2 Attack Roll", rolls[1]);
+        let logNode = document.createElement("p");
+        logNode.appendChild(document.createTextNode("Player 1 Attacks with Focus for "));
+        for (let i = 0; i < rolls[0].length; i++) {
+            // convert roll to text
+            let diceString = convertNumberToText(rolls[0][i]);
+            //<i class="fas fa-dice-one"></i>
+            let newDiceIcon = document.createElement("i");
+            newDiceIcon.className = `fas fa-dice-${diceString}`;
+            logNode.appendChild(newDiceIcon);
+        }
+        logNode.appendChild(document.createTextNode("(" + sumDice(rolls[0]) + ")"));
+        logDisplay.insertBefore(logNode, logDisplay.firstChild);
+        //begin defend phase
+        hideAllOptions(allButtons);
+        defendPhase();
+    });
+
+    allButtons.focusButtons[1].addEventListener("click", function() {
+        rolls[1] = rollDice(FOCUS,SIDES);
+        //console.log("Player 2 Attack Roll", rolls[1]);
+        let logNode = document.createElement("p");
+        logNode.appendChild(document.createTextNode("Player 2 Attacks with Focus for "));
+        for (let i = 0; i < rolls[1].length; i++) {
+            // convert roll to text
+            let diceString = convertNumberToText(rolls[1][i]);
+            //<i class="fas fa-dice-one"></i>
+            let newDiceIcon = document.createElement("i");
+            newDiceIcon.className = `fas fa-dice-${diceString}`;
+            logNode.appendChild(newDiceIcon);
+        }
+        logNode.appendChild(document.createTextNode("(" + sumDice(rolls[1]) + ")"));
+        logDisplay.insertBefore(logNode, logDisplay.firstChild);
+        //begin defend phase
+        hideAllOptions(allButtons);
+        defendPhase();
+    });
+
 
 //    let defendButtons = document.querySelectorAll(".defend-button");
     allButtons.defendButtons[0].addEventListener("click", function() {
@@ -309,6 +353,9 @@ function attackPhase() {
     // reveal any available options .style.display = 'block';
     // when button clicked the result is logged and then phase 2 defending players turn
     document.querySelectorAll(".attack-button")[attackingPlayer].parentNode.style.display = 'block';
+    if (specialPoints[attackingPlayer] > 0) {
+        document.querySelectorAll(".attack-button-focus")[attackingPlayer].parentNode.style.display = 'block';
+    }
 }
 
 
