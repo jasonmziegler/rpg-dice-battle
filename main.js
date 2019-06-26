@@ -22,13 +22,14 @@ The first player to deal 20 dmg wins.
 
 const SIDES = 6;
 
+//rolls[0] for player 0 and rolls[1] for player 1
 let rolls = [[],[]];
 let hitPoints = [ 20, 20];
 let specialPoints = [0, 0];
 let attackingPlayer = 0;
+//  defending player is always the opposite of the attacking player
 let defendingPlayer = (attackingPlayer === 0) ? 1 : 0;
-let attackButtons = document.querySelectorAll(".attack-button");
-let defendButtons = document.querySelectorAll(".defend-button");
+let attackButtons, defendButtons;
 let player1DiceNode, player2DiceNode, logDisplay;
 
 function rollDice(numDice, sides) {
@@ -58,27 +59,35 @@ function sumDice(diceArray) {
 function hideAllOptions() {
     document.querySelectorAll(".attack-button")[0].parentNode.style.display = 'none';
     document.querySelectorAll(".attack-button")[1].parentNode.style.display = 'none';
+    document.querySelectorAll(".attack-button-focus")[0].parentNode.style.display = 'none';
+    document.querySelectorAll(".attack-button-focus")[1].parentNode.style.display = 'none';
     document.querySelectorAll(".defend-button")[0].parentNode.style.display = 'none';
     document.querySelectorAll(".defend-button")[1].parentNode.style.display = 'none';
+    document.querySelectorAll(".defend-button-diamond")[0].parentNode.style.display = 'none';
+    document.querySelectorAll(".defend-button-diamond")[1].parentNode.style.display = 'none';
+    document.querySelectorAll(".spell-button-heal")[0].parentNode.style.display = 'none';
+    document.querySelectorAll(".spell-button-heal")[1].parentNode.style.display = 'none';
+    document.querySelectorAll(".spell-button-fire")[0].parentNode.style.display = 'none';
+    document.querySelectorAll(".spell-button-fire")[1].parentNode.style.display = 'none';
 }
 
 
 function convertNumberToText(num) {
     switch(num) {
         case 1:
-        return "one";
-  case 2:
-        return "two";
-  case 3:
-        return "three";
-  case 4:
-        return "four";
-  case 5:
-        return "five";
-  case 6:
-        return "six";
-  default:
-        return "one";
+            return "one";
+        case 2:
+            return "two";
+        case 3:
+            return "three";
+        case 4:
+            return "four";
+        case 5:
+            return "five";
+        case 6:
+            return "six";
+        default:
+            return "one";
     }
 }
 
