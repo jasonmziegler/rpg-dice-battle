@@ -57,18 +57,25 @@ function sumDice(diceArray) {
 
 
 function hideAllOptions() {
-    document.querySelectorAll(".attack-button")[0].parentNode.style.display = 'none';
-    document.querySelectorAll(".attack-button")[1].parentNode.style.display = 'none';
-    document.querySelectorAll(".attack-button-focus")[0].parentNode.style.display = 'none';
-    document.querySelectorAll(".attack-button-focus")[1].parentNode.style.display = 'none';
-    document.querySelectorAll(".defend-button")[0].parentNode.style.display = 'none';
-    document.querySelectorAll(".defend-button")[1].parentNode.style.display = 'none';
-    document.querySelectorAll(".defend-button-diamond")[0].parentNode.style.display = 'none';
-    document.querySelectorAll(".defend-button-diamond")[1].parentNode.style.display = 'none';
-    document.querySelectorAll(".spell-button-heal")[0].parentNode.style.display = 'none';
-    document.querySelectorAll(".spell-button-heal")[1].parentNode.style.display = 'none';
-    document.querySelectorAll(".spell-button-fire")[0].parentNode.style.display = 'none';
-    document.querySelectorAll(".spell-button-fire")[1].parentNode.style.display = 'none';
+    let attackButtons = document.querySelectorAll(".attack-button");
+    let focusButtons = document.querySelectorAll(".attack-button-focus");
+    let defendButtons = document.querySelectorAll(".defend-button");
+    let diamondButtons = document.querySelectorAll(".defend-button-diamond");
+    let healButtons = document.querySelectorAll(".spell-button-heal");
+    let fireButtons = document.querySelectorAll(".spell-button-fire");
+    
+    attackButtons[0].parentNode.style.display = 'none';
+    attackButtons[1].parentNode.style.display = 'none';
+    focusButtons[0].parentNode.style.display = 'none';
+    focusButtons[1].parentNode.style.display = 'none';
+    defendButtons[0].parentNode.style.display = 'none';
+    defendButtons[1].parentNode.style.display = 'none';
+    diamondButtons[0].parentNode.style.display = 'none';
+    diamondButtons[1].parentNode.style.display = 'none';
+    healButtons[0].parentNode.style.display = 'none';
+    healButtons[1].parentNode.style.display = 'none';
+    fireButtons[0].parentNode.style.display = 'none';
+    fireButtons[1].parentNode.style.display = 'none';
 }
 
 
@@ -99,6 +106,19 @@ function init() {
     
     // bind all event listeners
     let attackButtons = document.querySelectorAll(".attack-button");
+    let focusButtons = document.querySelectorAll(".attack-button-focus");
+    let defendButtons = document.querySelectorAll(".defend-button");
+    let diamondButtons = document.querySelectorAll(".defend-button-diamond");
+    let healButtons = document.querySelectorAll(".spell-button-heal");
+    let fireButtons = document.querySelectorAll(".spell-button-fire");
+    let allButtons = {
+        attackButtons: attackButtons,
+        focusButtons: focusButtons,
+        defendButtons: defendButtons,
+        diamondButtons: diamondButtons,
+        healButtons: healButtons,
+        fireButtons: fireButtons
+    }
 
     attackButtons[0].addEventListener("click", function() {
         rolls[0] = rollDice(1,SIDES);
@@ -116,6 +136,7 @@ function init() {
         testNode.appendChild(document.createTextNode("(" + sumDice(rolls[0]) + ")"));
         logDisplay.insertBefore(testNode, logDisplay.firstChild);
         //begin defend phase
+        hideAllOptions();
         defendPhase();
 
     });
@@ -136,14 +157,15 @@ function init() {
         testNode.appendChild(document.createTextNode("(" + sumDice(rolls[1]) + ")"));
         logDisplay.insertBefore(testNode, logDisplay.firstChild);
         //begin defend phase
+        hideAllOptions();
         defendPhase();
     });
 
-    let defendButtons = document.querySelectorAll(".defend-button");
+//    let defendButtons = document.querySelectorAll(".defend-button");
     defendButtons[0].addEventListener("click", function() {
         //console.log("Player 1 Defend", defendingPlayer);
         rolls[0] = rollDice(1,SIDES);
-        console.log("Player 1 Defend", rolls[0]);
+        //console.log("Player 1 Defend", rolls[0]);
         let testNode = document.createElement("p");
         testNode.appendChild(document.createTextNode("Player 1 Defends with "));
         let diceContainer = document.querySelector(".player-0-dice");
@@ -195,12 +217,13 @@ function init() {
         ////// end game 
         //// else next round
         alternateAttackingPlayer();
+        hideAllOptions();
         attackPhase();
     });
 
     defendButtons[1].addEventListener("click", function() {
         rolls[1] = rollDice(1,SIDES);
-        console.log("Player 2 Defend", rolls[1]);
+        //console.log("Player 2 Defend", rolls[1]);
         let testNode = document.createElement("p");
         testNode.appendChild(document.createTextNode("Player 2 Defends with "));
         let diceContainer = document.querySelector(".player-1-dice");
@@ -254,6 +277,7 @@ function init() {
         ////// end game 
         //// else next round
         alternateAttackingPlayer();
+        hideAllOptions();
         attackPhase();
     });
 
@@ -284,7 +308,6 @@ function alternateAttackingPlayer() {
 
 
 function attackPhase() {
-    hideAllOptions();
     // identify active player in UI
     document.querySelector(`.player-${defendingPlayer}-name`).classList.remove('active');
     document.querySelector(`.player-${attackingPlayer}-name`).classList.add('active');
@@ -296,7 +319,6 @@ function attackPhase() {
 
 
 function defendPhase() {
-    hideAllOptions();
     document.querySelector(`.player-${attackingPlayer}-name`).classList.remove('active');
     document.querySelector(`.player-${defendingPlayer}-name`).classList.add('active');
     // reveal available defending options
@@ -311,6 +333,7 @@ attackingPlayer = 0;
 
 init();
 determineStartingPlayer();
+hideAllOptions();
 attackPhase();
 
 // add event listener to new game function
