@@ -319,6 +319,128 @@ function init() {
         attackPhase();
     });
 
+    allButtons.diamondButtons[0].addEventListener("click", function() {
+        specialPoints[0] -= 4;
+        document.querySelector(".player-1-special").textContent = specialPoints[0];
+        //console.log("Player 1 Defend", defendingPlayer);
+        rolls[0] = rollDice(DIAMOND,SIDES);
+        //console.log("Player 1 Defend", rolls[0]);
+        let testNode = document.createElement("p");
+        testNode.appendChild(document.createTextNode("Player 1 defends with Diamond Skin for "));
+        let diceContainer = document.querySelector(".player-0-dice");
+        for (let i = 0; i < rolls[0].length; i++) {
+            // convert roll to text
+            let diceString = convertNumberToText(rolls[0][i]);
+            let newDiceIcon = document.createElement("i");
+            newDiceIcon.className = `fas fa-dice-${diceString}`;
+            testNode.appendChild(newDiceIcon);
+        }
+
+        testNode.appendChild(document.createTextNode("(" + sumDice(rolls[0]) + ")"));
+        // when defend button clicked display dice
+        logDisplay.insertBefore(testNode, logDisplay.firstChild);
+        result = resolveAttack();
+        //console.log("result", result);
+        let resultText = document.createElement("p");
+        if (result !== 0) {
+            if (result >= 1) {
+                // if Attack > Defend then 
+                //// subtract HP from Defending Player
+                hitPoints[0] -= result;
+                document.querySelector(".player-0-health").textContent = hitPoints[0];
+
+                resultText.appendChild(document.createTextNode(`Player 2 damages Player 1 for ${result} damage.`));
+                logDisplay.insertBefore(resultText, logDisplay.firstChild);
+
+            } else {
+                // if Attack < Defend then 
+                //// add SP to Defending player
+                specialPoints[0] += Math.abs(result);
+                document.querySelector(".player-0-special").textContent = specialPoints[0];
+
+                resultText.appendChild(document.createTextNode(`Player 1 gains ${Math.abs(result)} Special Points`));
+                logDisplay.insertBefore(resultText, logDisplay.firstChild);
+            }
+        } else {
+            resultText.appendChild(document.createTextNode("Player 1 is unscathed."));
+            logDisplay.insertBefore(resultText, logDisplay.firstChild);
+        }
+        if (hitPoints[0] <= 0) {
+            hideAllOptions(allButtons);
+            resultText = document.createElement("p");
+            resultText.appendChild(document.createTextNode("GAME OVER - Player 1 has been slain."));
+            logDisplay.insertBefore(resultText, logDisplay.firstChild);
+            return;
+        }
+        //// check if HP < 1
+        ////// end game 
+        //// else next round
+        alternateAttackingPlayer();
+        hideAllOptions(allButtons);
+        attackPhase();
+    });
+
+    allButtons.diamondButtons[1].addEventListener("click", function() {
+        specialPoints[1] -= 4;
+        document.querySelector(".player-1-special").textContent = specialPoints[1];
+        //console.log("Player 2 Defend", defendingPlayer);
+        rolls[1] = rollDice(DIAMOND,SIDES);
+        //console.log("Player 2 Defend", rolls[0]);
+        let testNode = document.createElement("p");
+        testNode.appendChild(document.createTextNode("Player 2 defends with Diamond Skin for "));
+        let diceContainer = document.querySelector(".player-1-dice");
+        for (let i = 0; i < rolls[1].length; i++) {
+            // convert roll to text
+            let diceString = convertNumberToText(rolls[1][i]);
+            let newDiceIcon = document.createElement("i");
+            newDiceIcon.className = `fas fa-dice-${diceString}`;
+            testNode.appendChild(newDiceIcon);
+        }
+
+        testNode.appendChild(document.createTextNode("(" + sumDice(rolls[1]) + ")"));
+        // when defend button clicked display dice
+        logDisplay.insertBefore(testNode, logDisplay.firstChild);
+        result = resolveAttack();
+        //console.log("result", result);
+        let resultText = document.createElement("p");
+        if (result !== 0) {
+            if (result >= 1) {
+                // if Attack > Defend then 
+                //// subtract HP from Defending Player
+                hitPoints[1] -= result;
+                document.querySelector(".player-1-health").textContent = hitPoints[1];
+
+                resultText.appendChild(document.createTextNode(`Player 1 damages Player 2 for ${result} damage.`));
+                logDisplay.insertBefore(resultText, logDisplay.firstChild);
+
+            } else {
+                // if Attack < Defend then 
+                //// add SP to Defending player
+                specialPoints[1] += Math.abs(result);
+                document.querySelector(".player-1-special").textContent = specialPoints[1];
+
+                resultText.appendChild(document.createTextNode(`Player 2 gains ${Math.abs(result)} Special Points`));
+                logDisplay.insertBefore(resultText, logDisplay.firstChild);
+            }
+        } else {
+            resultText.appendChild(document.createTextNode("Player 2 is unscathed."));
+            logDisplay.insertBefore(resultText, logDisplay.firstChild);
+        }
+        if (hitPoints[1] <= 0) {
+            hideAllOptions(allButtons);
+            resultText = document.createElement("p");
+            resultText.appendChild(document.createTextNode("GAME OVER - Player 1 has been slain."));
+            logDisplay.insertBefore(resultText, logDisplay.firstChild);
+            return;
+        }
+        //// check if HP < 1
+        ////// end game 
+        //// else next round
+        alternateAttackingPlayer();
+        hideAllOptions(allButtons);
+        attackPhase();
+    });
+
     // hide all menus and buttons 
     hideAllOptions(allButtons);
     // reset hp
@@ -364,6 +486,9 @@ function defendPhase() {
     document.querySelector(`.player-${defendingPlayer}-name`).classList.add('active');
     // reveal available defending options
     document.querySelectorAll(".defend-button")[defendingPlayer].parentNode.style.display = 'block';
+    if (specialPoints[defendingPlayer] >= 4) {
+        document.querySelectorAll(".defend-button-diamond")[defendingPlayer].parentNode.style.display = 'block';
+    }
 }
 
 
