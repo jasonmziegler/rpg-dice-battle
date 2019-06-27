@@ -640,6 +640,9 @@ function attackPhase() {
     if (specialPoints[attackingPlayer] > 0) {
         document.querySelectorAll(".attack-button-focus")[attackingPlayer].parentNode.style.display = 'block';
     }
+    if (specialPoints[attackingPlayer] >= 3) {
+        document.querySelectorAll(".spell-button-fire")[attackingPlayer].parentNode.style.display = 'block';
+    }
 }
 
 
