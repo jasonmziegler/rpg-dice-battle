@@ -30,6 +30,15 @@ var playerController = (function() {
         
 
     }
+
+    var sumDice = function (diceArray) {
+        let numDice = diceArray.length;
+        let diceTotal = 0;
+        for (let i =0; i < numDice; i++) {
+            diceTotal += diceArray[i];
+        }
+        return diceTotal;
+     }
     
     return {
         getData: function() {
@@ -43,13 +52,8 @@ var playerController = (function() {
             }
             return diceArray;
         },
-        sumDice: function (diceArray) {
-            let numDice = diceArray.length;
-            let diceTotal = 0;
-            for (let i =0; i < numDice; i++) {
-                diceTotal += diceArray[i];
-            }
-            return diceTotal;
+        getDiceSum: function (diceArray) {
+            return sumDice(diceArray);
          },
          convertNumberToText: function (num) {
             switch(num) {
@@ -150,7 +154,7 @@ var controller = (function(UICtrl, PlayerCtrl) {
                     logNode.appendChild(newDiceIcon);
                 }
                 // add result to logNode entry
-                logNode.appendChild(document.createTextNode("(" + PlayerCtrl.sumDice(data.rolls[i]) + ")"));
+                logNode.appendChild(document.createTextNode("(" + PlayerCtrl.getDiceSum(data.rolls[i]) + ")"));
                 // insert Log Node into DOM Game Log 
                 logDisplay.insertBefore(logNode, logDisplay.firstChild);
             });
@@ -169,7 +173,7 @@ var controller = (function(UICtrl, PlayerCtrl) {
                     newDiceIcon.className = `fas fa-dice-${diceString}`;
                     logNode.appendChild(newDiceIcon);
                 }
-                logNode.appendChild(document.createTextNode("(" + PlayerCtrl.sumDice(data.rolls[i]) + ")"));
+                logNode.appendChild(document.createTextNode("(" + PlayerCtrl.getDiceSum(data.rolls[i]) + ")"));
                 logDisplay.insertBefore(logNode, logDisplay.firstChild);
                 //begin defend phase
                 // hideAllOptions(allButtons);
@@ -191,7 +195,7 @@ var controller = (function(UICtrl, PlayerCtrl) {
                     newDiceIcon.className = `fas fa-dice-${diceString}`;
                     logNode.appendChild(newDiceIcon);
                 }
-                logNode.appendChild(document.createTextNode("(" + PlayerCtrl.sumDice(data.rolls[i]) + ")"));
+                logNode.appendChild(document.createTextNode("(" + PlayerCtrl.getDiceSum(data.rolls[i]) + ")"));
                 logDisplay.insertBefore(logNode, logDisplay.firstChild);
                 //begin defend phase
                 // hideAllOptions(allButtons);
@@ -213,7 +217,7 @@ var controller = (function(UICtrl, PlayerCtrl) {
                     logNode.appendChild(newDiceIcon);
                 }
         
-                logNode.appendChild(document.createTextNode("(" + PlayerCtrl.sumDice(data.rolls[i]) + ")"));
+                logNode.appendChild(document.createTextNode("(" + PlayerCtrl.getDiceSum(data.rolls[i]) + ")"));
                 // when defend button clicked display dice
                 logDisplay.insertBefore(logNode, logDisplay.firstChild);
                 // result = resolveAttack();
@@ -274,7 +278,7 @@ var controller = (function(UICtrl, PlayerCtrl) {
                     logNode.appendChild(newDiceIcon);
                 }
         
-                logNode.appendChild(document.createTextNode("(" + PlayerCtrl.sumDice(data.rolls[i]) + ")"));
+                logNode.appendChild(document.createTextNode("(" + PlayerCtrl.getDiceSum(data.rolls[i]) + ")"));
                 // when defend button clicked display dice
                 logDisplay.insertBefore(logNode, logDisplay.firstChild);
                 // result = resolveAttack();
@@ -335,7 +339,7 @@ var controller = (function(UICtrl, PlayerCtrl) {
                     logNode.appendChild(newDiceIcon);
                 }
         
-                logNode.appendChild(document.createTextNode("(" + PlayerCtrl.sumDice(data.rolls[i]) + ")"));
+                logNode.appendChild(document.createTextNode("(" + PlayerCtrl.getDiceSum(data.rolls[i]) + ")"));
                 // when defend button clicked display dice
                 logDisplay.insertBefore(logNode, logDisplay.firstChild);
                 // result = resolveAttack();
