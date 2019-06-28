@@ -25,6 +25,10 @@ const FOCUS = 2;
 const HEAL = 2;
 const FIRE = 3;
 const DIAMOND = 3;
+const FOCUSCOST = 1;
+const HEALCOST = 2;
+const FIRECOST = 3;
+const DIAMONDCOST = 4;
 //rolls[0] for player 0 and rolls[1] for player 1
 let rolls = [[],[]];
 let hitPoints = [ 20, 20];
@@ -33,7 +37,7 @@ let attackingPlayer = 0;
 //  defending player is always the opposite of the attacking player
 let defendingPlayer = (attackingPlayer === 0) ? 1 : 0;
 
-let player1DiceNode, player2DiceNode, logDisplay;
+let logDisplay;
 
 let attackButtons = document.querySelectorAll(".attack-button");
 let focusButtons = document.querySelectorAll(".attack-button-focus");
@@ -116,7 +120,6 @@ function init() {
     
     // bind all event listeners
    
-
     allButtons.attackButtons[0].addEventListener("click", function() {
         rolls[0] = rollDice(1,SIDES);
         //console.log("Player 1 Attack Roll", rolls[0]);
@@ -159,6 +162,8 @@ function init() {
     });
 
     allButtons.focusButtons[0].addEventListener("click", function() {
+        specialPoints[0] -= FOCUSCOST;
+        document.querySelector(".player-0-special").textContent = specialPoints[0];
         rolls[0] = rollDice(FOCUS,SIDES);
         //console.log("Player 2 Attack Roll", rolls[1]);
         let logNode = document.createElement("p");
@@ -179,6 +184,8 @@ function init() {
     });
 
     allButtons.focusButtons[1].addEventListener("click", function() {
+        specialPoints[1] -= FOCUSCOST;
+        document.querySelector(".player-1-special").textContent = specialPoints[1];
         rolls[1] = rollDice(FOCUS,SIDES);
         //console.log("Player 2 Attack Roll", rolls[1]);
         let logNode = document.createElement("p");
@@ -320,7 +327,7 @@ function init() {
     });
 
     allButtons.diamondButtons[0].addEventListener("click", function() {
-        specialPoints[0] -= 4;
+        specialPoints[0] -= DIAMONDCOST;
         document.querySelector(".player-0-special").textContent = specialPoints[0];
         //console.log("Player 1 Defend", defendingPlayer);
         rolls[0] = rollDice(DIAMOND,SIDES);
@@ -381,7 +388,7 @@ function init() {
     });
 
     allButtons.diamondButtons[1].addEventListener("click", function() {
-        specialPoints[1] -= 4;
+        specialPoints[1] -= DIAMONDCOST;
         document.querySelector(".player-1-special").textContent = specialPoints[1];
         //console.log("Player 2 Defend", defendingPlayer);
         rolls[1] = rollDice(DIAMOND,SIDES);
@@ -442,7 +449,7 @@ function init() {
     });
 
     allButtons.healButtons[0].addEventListener("click", function() {
-        specialPoints[0] -= 2;
+        specialPoints[0] -= HEALCOST;
         document.querySelector(".player-0-special").textContent = specialPoints[0];
         //console.log("Player 1 Defend", defendingPlayer);
         rolls[0] = rollDice(HEAL,SIDES);
@@ -503,8 +510,8 @@ function init() {
     });
 
     allButtons.healButtons[1].addEventListener("click", function() {
-        specialPoints[1] -= 2;
-        document.querySelector(".player-0-special").textContent = specialPoints[1];
+        specialPoints[1] -= HEALCOST;
+        document.querySelector(".player-1-special").textContent = specialPoints[1];
         //console.log("Player 1 Defend", defendingPlayer);
         rolls[1] = rollDice(HEAL,SIDES);
         //console.log("Player 1 Defend", rolls[0]);
@@ -564,6 +571,8 @@ function init() {
     });
 
     allButtons.fireButtons[0].addEventListener("click", function() {
+        specialPoints[0] -= FIRECOST;
+        document.querySelector(".player-0-special").textContent = specialPoints[0];
         rolls[0] = rollDice(FIRE,SIDES);
         //console.log("Player 2 Attack Roll", rolls[1]);
         let logNode = document.createElement("p");
@@ -584,6 +593,8 @@ function init() {
     });
 
     allButtons.fireButtons[1].addEventListener("click", function() {
+        specialPoints[1] -= FIRECOST;
+        document.querySelector(".player-1-special").textContent = specialPoints[1];
         rolls[1] = rollDice(FIRE,SIDES);
         //console.log("Player 2 Attack Roll", rolls[1]);
         let logNode = document.createElement("p");
