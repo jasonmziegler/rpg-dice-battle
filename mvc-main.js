@@ -68,7 +68,13 @@ var playerController = (function() {
                 default:
                     return "one";
             }
-        }
+        },
+        updateSpecialPoints: function () {
+            // update function to deal with changing special point data
+        },
+        resolveAttack: function () {
+            return sumDice(rolls[attackingPlayer]) - sumDice(rolls[defendingPlayer]);
+          }
     };
 })();
 
@@ -234,6 +240,128 @@ var controller = (function(UICtrl, PlayerCtrl) {
                 //     }
                 // } else {
                 //     resultText.appendChild(document.createTextNode("Player 1 is unscathed."));
+                //     logDisplay.insertBefore(resultText, logDisplay.firstChild);
+                // }
+                // if (hitPoints[0] <= 0) {
+                //     hideAllOptions(allButtons);
+                //     resultText = document.createElement("p");
+                //     resultText.appendChild(document.createTextNode("GAME OVER - Player 1 has been slain."));
+                //     logDisplay.insertBefore(resultText, logDisplay.firstChild);
+                //     return;
+                // }
+                //// check if HP < 1
+                ////// end game 
+                //// else next round
+                // alternateAttackingPlayer();
+                // hideAllOptions(allButtons);
+                // attackPhase();
+            });
+
+            document.querySelectorAll(DOM.buttons.diamondButtons)[i].addEventListener("click", function() {
+                data.specialPoints[i] -= data.diamondCost;
+                document.querySelector(`.player-${i}-special`).textContent = data.specialPoints[i];
+                //console.log("Player 1 Defend", defendingPlayer);
+                data.rolls[i] = PlayerCtrl.rollDice(data.diamond,data.sides);
+    
+                let logNode = document.createElement("p");
+                logNode.appendChild(document.createTextNode(`Player ${i+1} defends with Diamond Skin for `));
+                //let diceContainer = document.querySelector(".player-0-dice");
+                for (let j = 0; j < data.rolls[i].length; j++) {
+                    // convert roll to text
+                    let diceString = PlayerCtrl.convertNumberToText(data.rolls[i][j]);
+                    let newDiceIcon = document.createElement("i");
+                    newDiceIcon.className = `fas fa-dice-${diceString}`;
+                    logNode.appendChild(newDiceIcon);
+                }
+        
+                logNode.appendChild(document.createTextNode("(" + PlayerCtrl.sumDice(data.rolls[i]) + ")"));
+                // when defend button clicked display dice
+                logDisplay.insertBefore(logNode, logDisplay.firstChild);
+                // result = resolveAttack();
+                // //console.log("result", result);
+                // let resultText = document.createElement("p");
+                // if (result !== 0) {
+                //     if (result >= 1) {
+                //         // if Attack > Defend then 
+                //         //// subtract HP from Defending Player
+                //         hitPoints[0] -= result;
+                //         document.querySelector(".player-0-health").textContent = hitPoints[0];
+        
+                //         resultText.appendChild(document.createTextNode(`Player 2 damages Player 1 for ${result} damage.`));
+                //         logDisplay.insertBefore(resultText, logDisplay.firstChild);
+        
+                //     } else {
+                //         // if Attack < Defend then 
+                //         //// add SP to Defending player
+                //         specialPoints[0] += Math.abs(result);
+                //         document.querySelector(".player-0-special").textContent = specialPoints[0];
+        
+                //         resultText.appendChild(document.createTextNode(`Player 1 gains ${Math.abs(result)} Special Points`));
+                //         logDisplay.insertBefore(resultText, logDisplay.firstChild);
+                //     }
+                // } else {
+                //     resultText.appendChild(document.createTextNode("Player 1 is unscathed."));
+                //     logDisplay.insertBefore(resultText, logDisplay.firstChild);
+                // }
+                // if (hitPoints[0] <= 0) {
+                //     hideAllOptions(allButtons);
+                //     resultText = document.createElement("p");
+                //     resultText.appendChild(document.createTextNode("GAME OVER - Player 1 has been slain."));
+                //     logDisplay.insertBefore(resultText, logDisplay.firstChild);
+                //     return;
+                // }
+                //// check if HP < 1
+                ////// end game 
+                //// else next round
+                // alternateAttackingPlayer();
+                // hideAllOptions(allButtons);
+                // attackPhase();
+            });
+
+            document.querySelectorAll(DOM.buttons.healButtons)[i].addEventListener("click", function() {
+                data.specialPoints[i] -= data.healCost;
+                document.querySelector(`.player-${i}-special`).textContent = data.specialPoints[i];
+                //console.log("Player 1 Defend", defendingPlayer);
+                data.rolls[i] = PlayerCtrl.rollDice(data.heal, data.sides);
+                //console.log("Player 1 Defend", rolls[0]);
+                let logNode = document.createElement("p");
+                logNode.appendChild(document.createTextNode(`Player ${i+1} casts Heal for `));
+        
+                for (let j = 0; j < data.rolls[i].length; j++) {
+                    // convert roll to text
+                    let diceString = PlayerCtrl.convertNumberToText(data.rolls[i][j]);
+                    let newDiceIcon = document.createElement("i");
+                    newDiceIcon.className = `fas fa-dice-${diceString}`;
+                    logNode.appendChild(newDiceIcon);
+                }
+        
+                logNode.appendChild(document.createTextNode("(" + PlayerCtrl.sumDice(data.rolls[i]) + ")"));
+                // when defend button clicked display dice
+                logDisplay.insertBefore(logNode, logDisplay.firstChild);
+                // result = resolveAttack();
+                // //console.log("result", result);
+                // let resultText = document.createElement("p");
+                // if (result !== 0) {
+                //     if (result >= 1) {
+                //         // if Attack > Defend then 
+                //         //// subtract HP from Defending Player
+                //         hitPoints[0] -= result;
+                //         document.querySelector(".player-0-health").textContent = hitPoints[0];
+        
+                //         resultText.appendChild(document.createTextNode(`Player 1 fails to cast heal and suffers ${result} damage.`));
+                //         logDisplay.insertBefore(resultText, logDisplay.firstChild);
+        
+                //     } else {
+                //         // if Attack < Defend then 
+                //         //// add SP to Defending player
+                //         hitPoints[0] += Math.abs(result);
+                //         document.querySelector(".player-0-health").textContent = hitPoints[0];
+        
+                //         resultText.appendChild(document.createTextNode(`Player 1 heals for ${Math.abs(result)}.`));
+                //         logDisplay.insertBefore(resultText, logDisplay.firstChild);
+                //     }
+                // } else {
+                //     resultText.appendChild(document.createTextNode("Player 1 casts Heal and nullifies the damage dealt by Player 2."));
                 //     logDisplay.insertBefore(resultText, logDisplay.firstChild);
                 // }
                 // if (hitPoints[0] <= 0) {
