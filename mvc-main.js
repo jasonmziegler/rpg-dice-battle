@@ -126,7 +126,7 @@ var controller = (function(UICtrl, PlayerCtrl) {
         //console.log(DOM);
         logDisplay = document.querySelector(DOM.logDisplay);
         
-        //could loop through every action type and create an event listener for both of the button for each type using a for in loop
+        //could loop through every action type and create an event listener for both of the button for each type using a for in loop, using a single add event listener function
         for (let i = 0; i < data.players.length; i++) {
             
             document.querySelectorAll(DOM.buttons.attackButtons)[i].addEventListener("click", function() {
@@ -151,10 +151,32 @@ var controller = (function(UICtrl, PlayerCtrl) {
 
             document.querySelectorAll(DOM.buttons.focusButtons)[i].addEventListener("click", function() {
                 data.specialPoints[i] -= data.focusCost;
-                document.querySelector(".player-0-special").textContent = data.specialPoints[i];
+                document.querySelector(`.player-${i}-special`).textContent = data.specialPoints[i];
                 data.rolls[i] = PlayerCtrl.rollDice(data.focus, data.sides);
                 let logNode = document.createElement("p");
                 logNode.appendChild(document.createTextNode(`Player ${i+1} Attacks with Focus for `));
+                for (let j = 0; j < data.rolls[i].length; j++) {
+                    // convert roll to text
+                    let diceString = PlayerCtrl.convertNumberToText(data.rolls[i][j]);
+                    //<i class="fas fa-dice-one"></i>
+                    let newDiceIcon = document.createElement("i");
+                    newDiceIcon.className = `fas fa-dice-${diceString}`;
+                    logNode.appendChild(newDiceIcon);
+                }
+                logNode.appendChild(document.createTextNode("(" + PlayerCtrl.sumDice(data.rolls[i]) + ")"));
+                logDisplay.insertBefore(logNode, logDisplay.firstChild);
+                //begin defend phase
+                // hideAllOptions(allButtons);
+                // defendPhase();
+            });
+
+            document.querySelectorAll(DOM.buttons.fireButtons)[i].addEventListener("click", function() {
+                data.specialPoints[i] -= data.fireCost;
+                document.querySelector(`.player-${i}-special`).textContent = data.specialPoints[i];
+                data.rolls[i] = PlayerCtrl.rollDice(data.fire,data.sides);
+                //console.log("Player 2 Attack Roll", rolls[1]);
+                let logNode = document.createElement("p");
+                logNode.appendChild(document.createTextNode(`Player ${i+1} Casts Fire for `));
                 for (let j = 0; j < data.rolls[i].length; j++) {
                     // convert roll to text
                     let diceString = PlayerCtrl.convertNumberToText(data.rolls[i][j]);
