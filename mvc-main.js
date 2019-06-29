@@ -218,11 +218,13 @@ var controller = (function(UICtrl, PlayerCtrl) {
     }
 
     var defendPhase = function() {
-        console.log("Defend Phase");
+        console.log("Begin Defend Phase");
     }
 
     var setupEventListeners = function(data, DOM) {
-        
+        let players = PlayerCtrl.getData().players;
+        let rolls = PlayerCtrl.getData().rolls;
+        let sides;
         //console.log(DOM);
         logDisplay = document.querySelector(DOM.logDisplay);
         
@@ -247,6 +249,7 @@ var controller = (function(UICtrl, PlayerCtrl) {
                 logNode.appendChild(document.createTextNode("(" + PlayerCtrl.getDiceSum(data.rolls[i]) + ")"));
                 // insert Log Node into DOM Game Log 
                 logDisplay.insertBefore(logNode, logDisplay.firstChild);
+                defendPhase();
             });
 
             document.querySelectorAll(DOM.buttons.focusButtons)[i].addEventListener("click", function() {
@@ -267,7 +270,7 @@ var controller = (function(UICtrl, PlayerCtrl) {
                 logDisplay.insertBefore(logNode, logDisplay.firstChild);
                 //begin defend phase
                 // hideAllOptions(allButtons);
-                // defendPhase();
+                defendPhase();
             });
 
             document.querySelectorAll(DOM.buttons.fireButtons)[i].addEventListener("click", function() {
@@ -287,9 +290,9 @@ var controller = (function(UICtrl, PlayerCtrl) {
                 }
                 logNode.appendChild(document.createTextNode("(" + PlayerCtrl.getDiceSum(data.rolls[i]) + ")"));
                 logDisplay.insertBefore(logNode, logDisplay.firstChild);
-                //begin defend phase
-                // hideAllOptions(allButtons);
-                // defendPhase();
+                // begin defend phase
+                //hideAllOptions(allButtons);
+                defendPhase();
             });
 
             document.querySelectorAll(DOM.buttons.defendButtons)[i].addEventListener("click", function() {
@@ -311,10 +314,7 @@ var controller = (function(UICtrl, PlayerCtrl) {
                 // when defend button clicked display dice
                 logDisplay.insertBefore(logNode, logDisplay.firstChild);
                 handleResult(i, DOM.buttons.defendButtons);
-                // result = PlayerCtrl.getAttackResult(i);
-                // console.log("result", result);
-                // console.log(PlayerCtrl.evalutateResult(result, i, DOM.buttons.defendButtons));
-                   
+                handleGameOver(i);   
             });
 
             document.querySelectorAll(DOM.buttons.diamondButtons)[i].addEventListener("click", function() {
@@ -337,45 +337,8 @@ var controller = (function(UICtrl, PlayerCtrl) {
                 logNode.appendChild(document.createTextNode("(" + PlayerCtrl.getDiceSum(data.rolls[i]) + ")"));
                 // when defend button clicked display dice
                 logDisplay.insertBefore(logNode, logDisplay.firstChild);
-                // result = resolveAttack();
-                // //console.log("result", result);
-                // let resultText = document.createElement("p");
-                // if (result !== 0) {
-                //     if (result >= 1) {
-                //         // if Attack > Defend then 
-                //         //// subtract HP from Defending Player
-                //         hitPoints[0] -= result;
-                //         document.querySelector(".player-0-health").textContent = hitPoints[0];
-        
-                //         resultText.appendChild(document.createTextNode(`Player 2 damages Player 1 for ${result} damage.`));
-                //         logDisplay.insertBefore(resultText, logDisplay.firstChild);
-        
-                //     } else {
-                //         // if Attack < Defend then 
-                //         //// add SP to Defending player
-                //         specialPoints[0] += Math.abs(result);
-                //         document.querySelector(".player-0-special").textContent = specialPoints[0];
-        
-                //         resultText.appendChild(document.createTextNode(`Player 1 gains ${Math.abs(result)} Special Points`));
-                //         logDisplay.insertBefore(resultText, logDisplay.firstChild);
-                //     }
-                // } else {
-                //     resultText.appendChild(document.createTextNode("Player 1 is unscathed."));
-                //     logDisplay.insertBefore(resultText, logDisplay.firstChild);
-                // }
-                // if (hitPoints[0] <= 0) {
-                //     hideAllOptions(allButtons);
-                //     resultText = document.createElement("p");
-                //     resultText.appendChild(document.createTextNode("GAME OVER - Player 1 has been slain."));
-                //     logDisplay.insertBefore(resultText, logDisplay.firstChild);
-                //     return;
-                // }
-                //// check if HP < 1
-                ////// end game 
-                //// else next round
-                // alternateAttackingPlayer();
-                // hideAllOptions(allButtons);
-                // attackPhase();
+                handleResult(i, DOM.buttons.diamondButtons);
+                handleGameOver(i);   
             });
 
             document.querySelectorAll(DOM.buttons.healButtons)[i].addEventListener("click", function() {
@@ -398,49 +361,10 @@ var controller = (function(UICtrl, PlayerCtrl) {
                 logNode.appendChild(document.createTextNode("(" + PlayerCtrl.getDiceSum(data.rolls[i]) + ")"));
                 // when defend button clicked display dice
                 logDisplay.insertBefore(logNode, logDisplay.firstChild);
-                // result = resolveAttack();
-                // //console.log("result", result);
-                // let resultText = document.createElement("p");
-                // if (result !== 0) {
-                //     if (result >= 1) {
-                //         // if Attack > Defend then 
-                //         //// subtract HP from Defending Player
-                //         hitPoints[0] -= result;
-                //         document.querySelector(".player-0-health").textContent = hitPoints[0];
-        
-                //         resultText.appendChild(document.createTextNode(`Player 1 fails to cast heal and suffers ${result} damage.`));
-                //         logDisplay.insertBefore(resultText, logDisplay.firstChild);
-        
-                //     } else {
-                //         // if Attack < Defend then 
-                //         //// add SP to Defending player
-                //         hitPoints[0] += Math.abs(result);
-                //         document.querySelector(".player-0-health").textContent = hitPoints[0];
-        
-                //         resultText.appendChild(document.createTextNode(`Player 1 heals for ${Math.abs(result)}.`));
-                //         logDisplay.insertBefore(resultText, logDisplay.firstChild);
-                //     }
-                // } else {
-                //     resultText.appendChild(document.createTextNode("Player 1 casts Heal and nullifies the damage dealt by Player 2."));
-                //     logDisplay.insertBefore(resultText, logDisplay.firstChild);
-                // }
-                // if (hitPoints[0] <= 0) {
-                //     hideAllOptions(allButtons);
-                //     resultText = document.createElement("p");
-                //     resultText.appendChild(document.createTextNode("GAME OVER - Player 1 has been slain."));
-                //     logDisplay.insertBefore(resultText, logDisplay.firstChild);
-                //     return;
-                // }
-                //// check if HP < 1
-                ////// end game 
-                //// else next round
-                // alternateAttackingPlayer();
-                // hideAllOptions(allButtons);
-                // attackPhase();
+                handleResult(i, DOM.buttons.healButtons);
+                handleGameOver(i);   
             });
         }
-        
-
     }
 
     return {
@@ -452,9 +376,11 @@ var controller = (function(UICtrl, PlayerCtrl) {
             setupEventListeners(data,DOM);
             //UICtrl.hideAllOptions(DOM.buttons);
             console.log("The application has started.");
+            return data;
         },
-        gameLoop: function() {
+        gameLoop: function(data) {
             // First Player show available buttons
+            attackPhase(data.startingPlayer);
             // Player Clicks Button
             // Hide All Options
             // Check for Human Player 2 if A make selection from a set of choices depends on available sp.
@@ -471,4 +397,4 @@ var controller = (function(UICtrl, PlayerCtrl) {
 })(UIController, playerController);
 
 controller.init();
-controller.gameLoop();
+//controller.gameLoop(controller.init());
