@@ -10,6 +10,7 @@ var playerController = (function() {
     const FIRECOST = 3;
     const DIAMONDCOST = 4;
     
+    //may need to split into player data and gameData
     var data = {
         startingPlayer: 0,
         players: [0, 1],
@@ -206,7 +207,7 @@ var controller = (function(UICtrl, PlayerCtrl) {
         let gameOver = PlayerCtrl.evaluateEndCondition(player);
                 if (gameOver) {
                     console.log(gameOver);
-                    ////// end game 
+                    return true; ////// end game 
                 } else { //// else next round
                     // alternateAttackingPlayer();
                     // hideAllOptions(allButtons);
@@ -222,9 +223,7 @@ var controller = (function(UICtrl, PlayerCtrl) {
     }
 
     var setupEventListeners = function(data, DOM) {
-        let players = PlayerCtrl.getData().players;
-        let rolls = PlayerCtrl.getData().rolls;
-        let sides;
+        
         //console.log(DOM);
         logDisplay = document.querySelector(DOM.logDisplay);
         
@@ -314,7 +313,14 @@ var controller = (function(UICtrl, PlayerCtrl) {
                 // when defend button clicked display dice
                 logDisplay.insertBefore(logNode, logDisplay.firstChild);
                 handleResult(i, DOM.buttons.defendButtons);
-                handleGameOver(i);   
+                
+                if (!handleGameOver(i)) {
+                    //alternateAttackingPlayer();
+                    //hideAllOptions(allButtons);
+                    attackPhase();
+                } else {
+                    // hideAllOptions(allButtons);
+                }
             });
 
             document.querySelectorAll(DOM.buttons.diamondButtons)[i].addEventListener("click", function() {
@@ -338,7 +344,14 @@ var controller = (function(UICtrl, PlayerCtrl) {
                 // when defend button clicked display dice
                 logDisplay.insertBefore(logNode, logDisplay.firstChild);
                 handleResult(i, DOM.buttons.diamondButtons);
-                handleGameOver(i);   
+                
+                if (!handleGameOver(i)) {
+                    //alternateAttackingPlayer();
+                    //hideAllOptions(allButtons);
+                    attackPhase();
+                } else {
+                    // hideAllOptions(allButtons);
+                }   
             });
 
             document.querySelectorAll(DOM.buttons.healButtons)[i].addEventListener("click", function() {
@@ -362,7 +375,13 @@ var controller = (function(UICtrl, PlayerCtrl) {
                 // when defend button clicked display dice
                 logDisplay.insertBefore(logNode, logDisplay.firstChild);
                 handleResult(i, DOM.buttons.healButtons);
-                handleGameOver(i);   
+                if (!handleGameOver(i)) {
+                    //alternateAttackingPlayer();
+                    //hideAllOptions(allButtons);
+                    attackPhase();
+                } else {
+                    // hideAllOptions(allButtons);
+                }
             });
         }
     }
