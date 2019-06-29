@@ -1,4 +1,3 @@
-
 var playerController = (function() {
     
     const SIDES = 6;
@@ -15,6 +14,7 @@ var playerController = (function() {
         startingPlayer: 0,
         players: [0, 1],
         rolls: [[],[]],
+        // actionType may be necessary for when consolidating the button click function to a single function.
         actionType: ["",""],
         hitPoints: [ 20, 20],
         specialPoints: [0, 0],
@@ -39,6 +39,10 @@ var playerController = (function() {
         }
         return diceTotal;
      }
+
+     var determineOppositePlayer = function (player) {
+        return ((player === 0) ? 1 :  0);
+     }
     
     return {
         getData: function() {
@@ -54,8 +58,8 @@ var playerController = (function() {
         },
         getDiceSum: function (diceArray) {
             return sumDice(diceArray);
-         },
-         convertNumberToText: function (num) {
+        },
+        convertNumberToText: function (num) {
             switch(num) {
                 case 1:
                     return "one";
@@ -77,9 +81,43 @@ var playerController = (function() {
             // update function to deal with changing special point data
         },
         getAttackResult: function (defendingPlayer) {
-            let attackingPlayer = (defendingPlayer === 0) ? 1 : 0;
+            let attackingPlayer = determineOppositePlayer(defendingPlayer);
             return sumDice(data.rolls[attackingPlayer]) - sumDice(data.rolls[defendingPlayer]);
-          }
+        },
+        evalutateResult: function (result, defendingPlayer) {
+                let attackingPlayer = determineOppositePlayer(defendingPlayer);            
+                if (result !== 0) {
+                    if (result >= 1) {
+                        // if Attack > Defend then 
+                        //// subtract HP from Defending Player
+                        data.hitPoints[defendingPlayer] -= result;
+                        //document.querySelector(".player-0-health").textContent = hitPoints[0];
+        
+                        return `Player ${attackingPlayer+1} damages Player ${defendingPlayer+1} for ${result} damage.`;
+                        //logDisplay.insertBefore(resultText, logDisplay.firstChild);
+        
+                    } else {
+                        // if Attack < Defend then 
+                        //// add SP to Defending player
+                        data.specialPoints[defendingPlayer] += Math.abs(result);
+                        //document.querySelector(".player-0-special").textContent = specialPoints[0];
+        
+                        return `Player ${defendingPlayer+1} gains ${Math.abs(result)} Special Points`;
+                        //logDisplay.insertBefore(resultText, logDisplay.firstChild);
+                    }
+                } else {
+                    return `${defendingPlayer+1} is unscathed.`;
+                    //logDisplay.insertBefore(resultText, logDisplay.firstChild);
+                }
+        },
+        evaluateEndCondition: function (defendingPlayer) {
+            //console.log(data.hitPoints[defendingPlayer]);
+            if (data.hitPoints[defendingPlayer] >= 0) {
+                return false;
+            } else {
+                return `GAME OVER - Player ${defendingPlayer+1} has been slain.`;
+            }
+        }
     };
 })();
 
@@ -126,6 +164,21 @@ var UIController = (function() {
                     }
                 }
             } 
+        },
+        updateHitPoints: function(player) {
+            //this method will update players hitpoints
+        },
+        updateSpecialPoints: function(player) {
+            // this method will update the players Special Points
+        },
+        displayToLog: function (message) {
+            // this method will create a text node with a given string and display it to the game log
+        },
+        displayActiveAttackButtons: function () {
+
+        },
+        displayActiveDefenceButtons: function () {
+            
         }
     }
 })();
@@ -223,43 +276,16 @@ var controller = (function(UICtrl, PlayerCtrl) {
                 logDisplay.insertBefore(logNode, logDisplay.firstChild);
                 result = PlayerCtrl.getAttackResult(i);
                 console.log("result", result);
-                // let resultText = document.createElement("p");
-                // if (result !== 0) {
-                //     if (result >= 1) {
-                //         // if Attack > Defend then 
-                //         //// subtract HP from Defending Player
-                //         hitPoints[0] -= result;
-                //         document.querySelector(".player-0-health").textContent = hitPoints[0];
-        
-                //         resultText.appendChild(document.createTextNode(`Player 2 damages Player 1 for ${result} damage.`));
-                //         logDisplay.insertBefore(resultText, logDisplay.firstChild);
-        
-                //     } else {
-                //         // if Attack < Defend then 
-                //         //// add SP to Defending player
-                //         specialPoints[0] += Math.abs(result);
-                //         document.querySelector(".player-0-special").textContent = specialPoints[0];
-        
-                //         resultText.appendChild(document.createTextNode(`Player 1 gains ${Math.abs(result)} Special Points`));
-                //         logDisplay.insertBefore(resultText, logDisplay.firstChild);
-                //     }
-                // } else {
-                //     resultText.appendChild(document.createTextNode("Player 1 is unscathed."));
-                //     logDisplay.insertBefore(resultText, logDisplay.firstChild);
-                // }
-                // if (hitPoints[0] <= 0) {
-                //     hideAllOptions(allButtons);
-                //     resultText = document.createElement("p");
-                //     resultText.appendChild(document.createTextNode("GAME OVER - Player 1 has been slain."));
-                //     logDisplay.insertBefore(resultText, logDisplay.firstChild);
-                //     return;
-                // }
-                //// check if HP < 1
-                ////// end game 
-                //// else next round
-                // alternateAttackingPlayer();
-                // hideAllOptions(allButtons);
-                // attackPhase();
+                console.log(PlayerCtrl.evalutateResult(result, i));
+                let gameOver = PlayerCtrl.evaluateEndCondition(i);
+                if (gameOver) {
+                    console.log(gameOver);
+                    ////// end game 
+                } else { //// else next round
+                    // alternateAttackingPlayer();
+                    // hideAllOptions(allButtons);
+                    // attackPhase();
+                }   
             });
 
             document.querySelectorAll(DOM.buttons.diamondButtons)[i].addEventListener("click", function() {
