@@ -101,11 +101,13 @@ var playerController = (function() {
                     } else {
                         // if Attack < Defend then 
                         //// add SP to Defending player
-                        data.specialPoints[defendingPlayer] += Math.abs(result);
                         
+                        //check for heal
                         if (buttonType === ".spell-button-heal") {
+                            data.hitPoints[defendingPlayer] += Math.abs(result);
                             return `Player 1 heals for ${Math.abs(result)}.`;
                         } else {
+                            data.specialPoints[defendingPlayer] += Math.abs(result);
                             return `Player ${defendingPlayer+1} gains ${Math.abs(result)} Special Points`;
                         }                        
                     }
@@ -193,6 +195,31 @@ var UIController = (function() {
 })();
 
 var controller = (function(UICtrl, PlayerCtrl) {
+    var handleResult = function(player, buttonType) {
+        result = PlayerCtrl.getAttackResult(player);
+        console.log("result", result);
+        // this will call the log result function
+        console.log(PlayerCtrl.evalutateResult(result, player, buttonType));
+    }
+
+    var handleGameOver = function(player) {
+        let gameOver = PlayerCtrl.evaluateEndCondition(player);
+                if (gameOver) {
+                    console.log(gameOver);
+                    ////// end game 
+                } else { //// else next round
+                    // alternateAttackingPlayer();
+                    // hideAllOptions(allButtons);
+                    // attackPhase();
+                }
+    }
+    var attackPhase = function() {
+        console.log("Attack Phase");
+    }
+
+    var defendPhase = function() {
+        console.log("Defend Phase");
+    }
 
     var setupEventListeners = function(data, DOM) {
         
@@ -283,18 +310,11 @@ var controller = (function(UICtrl, PlayerCtrl) {
                 logNode.appendChild(document.createTextNode("(" + PlayerCtrl.getDiceSum(data.rolls[i]) + ")"));
                 // when defend button clicked display dice
                 logDisplay.insertBefore(logNode, logDisplay.firstChild);
-                result = PlayerCtrl.getAttackResult(i);
-                console.log("result", result);
-                console.log(PlayerCtrl.evalutateResult(result, i, DOM.buttons.defendButtons));
-                let gameOver = PlayerCtrl.evaluateEndCondition(i);
-                if (gameOver) {
-                    console.log(gameOver);
-                    ////// end game 
-                } else { //// else next round
-                    // alternateAttackingPlayer();
-                    // hideAllOptions(allButtons);
-                    // attackPhase();
-                }   
+                handleResult(i, DOM.buttons.defendButtons);
+                // result = PlayerCtrl.getAttackResult(i);
+                // console.log("result", result);
+                // console.log(PlayerCtrl.evalutateResult(result, i, DOM.buttons.defendButtons));
+                   
             });
 
             document.querySelectorAll(DOM.buttons.diamondButtons)[i].addEventListener("click", function() {
@@ -451,3 +471,4 @@ var controller = (function(UICtrl, PlayerCtrl) {
 })(UIController, playerController);
 
 controller.init();
+controller.gameLoop();
