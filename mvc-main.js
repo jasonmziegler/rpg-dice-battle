@@ -84,30 +84,39 @@ var playerController = (function() {
             let attackingPlayer = determineOppositePlayer(defendingPlayer);
             return sumDice(data.rolls[attackingPlayer]) - sumDice(data.rolls[defendingPlayer]);
         },
-        evalutateResult: function (result, defendingPlayer) {
-                let attackingPlayer = determineOppositePlayer(defendingPlayer);            
+        evalutateResult: function (result, defendingPlayer, buttonType) {
+                let attackingPlayer = determineOppositePlayer(defendingPlayer);
+                console.log(buttonType);            
                 if (result !== 0) {
                     if (result >= 1) {
                         // if Attack > Defend then 
                         //// subtract HP from Defending Player
                         data.hitPoints[defendingPlayer] -= result;
-                        //document.querySelector(".player-0-health").textContent = hitPoints[0];
-        
-                        return `Player ${attackingPlayer+1} damages Player ${defendingPlayer+1} for ${result} damage.`;
-                        //logDisplay.insertBefore(resultText, logDisplay.firstChild);
-        
+                        // return result message
+                        if (buttonType === ".spell-button-heal") {
+                            return `Player 1 fails to cast heal and suffers ${result} damage.`
+                        } else {
+                            return `Player ${attackingPlayer+1} damages Player ${defendingPlayer+1} for ${result} damage.`;
+                        }                                
                     } else {
                         // if Attack < Defend then 
                         //// add SP to Defending player
                         data.specialPoints[defendingPlayer] += Math.abs(result);
-                        //document.querySelector(".player-0-special").textContent = specialPoints[0];
-        
-                        return `Player ${defendingPlayer+1} gains ${Math.abs(result)} Special Points`;
-                        //logDisplay.insertBefore(resultText, logDisplay.firstChild);
+                        
+                        if (buttonType === ".spell-button-heal") {
+                            return `Player 1 heals for ${Math.abs(result)}.`;
+                        } else {
+                            return `Player ${defendingPlayer+1} gains ${Math.abs(result)} Special Points`;
+                        }                        
                     }
                 } else {
-                    return `${defendingPlayer+1} is unscathed.`;
-                    //logDisplay.insertBefore(resultText, logDisplay.firstChild);
+                    // if Attack = to Heal/Defend 
+                    /// return no change result message
+                    if (buttonType === ".spell-button-heal") {
+                        return `Player ${defendingPlayer+1} casts Heal and nullifies the damage dealt by ${attackingPlayer+1}.`
+                    } else {
+                       return `Player ${defendingPlayer+1} is unscathed.`;
+                    }                    
                 }
         },
         evaluateEndCondition: function (defendingPlayer) {
@@ -175,10 +184,10 @@ var UIController = (function() {
             // this method will create a text node with a given string and display it to the game log
         },
         displayActiveAttackButtons: function () {
-
+            // this method will display the buttons that are available to the current attacking player
         },
         displayActiveDefenceButtons: function () {
-            
+            // this method will display the buttons that are available to the current defending player
         }
     }
 })();
@@ -276,7 +285,7 @@ var controller = (function(UICtrl, PlayerCtrl) {
                 logDisplay.insertBefore(logNode, logDisplay.firstChild);
                 result = PlayerCtrl.getAttackResult(i);
                 console.log("result", result);
-                console.log(PlayerCtrl.evalutateResult(result, i));
+                console.log(PlayerCtrl.evalutateResult(result, i, DOM.buttons.defendButtons));
                 let gameOver = PlayerCtrl.evaluateEndCondition(i);
                 if (gameOver) {
                     console.log(gameOver);
