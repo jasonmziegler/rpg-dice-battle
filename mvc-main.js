@@ -76,8 +76,9 @@ var playerController = (function() {
         updateSpecialPoints: function () {
             // update function to deal with changing special point data
         },
-        resolveAttack: function () {
-            return sumDice(rolls[attackingPlayer]) - sumDice(rolls[defendingPlayer]);
+        getAttackResult: function (defendingPlayer) {
+            let attackingPlayer = (defendingPlayer === 0) ? 1 : 0;
+            return sumDice(data.rolls[attackingPlayer]) - sumDice(data.rolls[defendingPlayer]);
           }
     };
 })();
@@ -220,8 +221,8 @@ var controller = (function(UICtrl, PlayerCtrl) {
                 logNode.appendChild(document.createTextNode("(" + PlayerCtrl.getDiceSum(data.rolls[i]) + ")"));
                 // when defend button clicked display dice
                 logDisplay.insertBefore(logNode, logDisplay.firstChild);
-                // result = resolveAttack();
-                // //console.log("result", result);
+                result = PlayerCtrl.getAttackResult(i);
+                console.log("result", result);
                 // let resultText = document.createElement("p");
                 // if (result !== 0) {
                 //     if (result >= 1) {
@@ -401,6 +402,7 @@ var controller = (function(UICtrl, PlayerCtrl) {
             // First Player show available buttons
             // Player Clicks Button
             // Hide All Options
+            // Check for Human Player 2 if A make selection from a set of choices depends on available sp.
             // Second Player Defends
             // Hide All Options
             // Calculate Results
