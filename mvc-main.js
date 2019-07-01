@@ -49,6 +49,9 @@ var playerController = (function() {
         getData: function() {
             return data;
         },
+        getOppositePlayer: function(player) {
+            return determineOppositePlayer(player);
+        },
         rollDice: function (numDice, sides) {
             let diceArray = [];
             for (let i = 0; i < numDice; i++) {
@@ -78,7 +81,22 @@ var playerController = (function() {
                     return "one";
             }
         },
-        updateSpecialPoints: function () {
+        getRolls: function () {
+            // This functions gets rolls from the model controller
+        },
+        setRolls: function () { 
+            // This function sets rolls in the model controller
+        },
+        getHitPoints: function () { 
+            // This function gets hitpoints from the model controller 
+        },
+        setHitPoints: function () {
+            // This function sets hitpoints in the model controller
+        },
+        getSpecialPoints: function () {
+            // This function returns the special point array
+        },
+        setSpecialPoints: function () {
             // update function to deal with changing special point data
         },
         getAttackResult: function (defendingPlayer) {
@@ -214,12 +232,44 @@ var controller = (function(UICtrl, PlayerCtrl) {
                     // attackPhase();
                 }
     }
-    var attackPhase = function() {
-        console.log("Attack Phase");
+    var attackPhase = function(defendingPlayer) {
+        // need to make determineOppositePlayer a public function
+        console.log('defending Player', defendingPlayer);
+        let attackingPlayer = PlayerCtrl.getOppositePlayer(defendingPlayer);
+        console.log('attacking player', attackingPlayer);
+        console.log("Begin Attack Phase");
+        // identify active player in UI
+        // document.querySelector(`.player-${defendingPlayer}-name`).classList.remove('active');
+        // document.querySelector(`.player-${attackingPlayer}-name`).classList.add('active');
+        // // reveal available attack options
+        // // reveal any available options .style.display = 'block';
+        // // when button clicked the result is logged and then phase 2 defending players turn
+        //document.querySelectorAll(".attack-button")[attackingPlayer].parentNode.style.display = 'block';
+        // if (specialPoints[attackingPlayer] > 0) {
+        //     document.querySelectorAll(".attack-button-focus")[attackingPlayer].parentNode.style.display = 'block';
+        // }
+        // if (specialPoints[attackingPlayer] >= 3) {
+        //     document.querySelectorAll(".spell-button-fire")[attackingPlayer].parentNode.style.display = 'block';
+        // }
     }
 
-    var defendPhase = function() {
+    var defendPhase = function(attackingPlayer) {
+        console.log('attacking player', attackingPlayer);
+        let defendingPlayer = PlayerCtrl.getOppositePlayer(attackingPlayer);
+        console.log('Defending Player', defendingPlayer);
         console.log("Begin Defend Phase");
+        // document.querySelector(`.player-${attackingPlayer}-name`).classList.remove('active');
+        // document.querySelector(`.player-${defendingPlayer}-name`).classList.add('active');
+        // // reveal available defending options
+        // document.querySelectorAll(".defend-button")[defendingPlayer].parentNode.style.display = 'block';
+        
+        // if (specialPoints[defendingPlayer] >=2) {
+        //     document.querySelectorAll(".spell-button-heal")[defendingPlayer].parentNode.style.display = 'block';
+        // }
+
+        // if (specialPoints[defendingPlayer] >= 4) {
+        //     document.querySelectorAll(".defend-button-diamond")[defendingPlayer].parentNode.style.display = 'block';
+        // }
     }
 
     var setupEventListeners = function(data, DOM) {
@@ -248,7 +298,7 @@ var controller = (function(UICtrl, PlayerCtrl) {
                 logNode.appendChild(document.createTextNode("(" + PlayerCtrl.getDiceSum(data.rolls[i]) + ")"));
                 // insert Log Node into DOM Game Log 
                 logDisplay.insertBefore(logNode, logDisplay.firstChild);
-                defendPhase();
+                defendPhase(i);
             });
 
             document.querySelectorAll(DOM.buttons.focusButtons)[i].addEventListener("click", function() {
@@ -269,7 +319,7 @@ var controller = (function(UICtrl, PlayerCtrl) {
                 logDisplay.insertBefore(logNode, logDisplay.firstChild);
                 //begin defend phase
                 // hideAllOptions(allButtons);
-                defendPhase();
+                defendPhase(i);
             });
 
             document.querySelectorAll(DOM.buttons.fireButtons)[i].addEventListener("click", function() {
@@ -291,7 +341,7 @@ var controller = (function(UICtrl, PlayerCtrl) {
                 logDisplay.insertBefore(logNode, logDisplay.firstChild);
                 // begin defend phase
                 //hideAllOptions(allButtons);
-                defendPhase();
+                defendPhase(i);
             });
 
             document.querySelectorAll(DOM.buttons.defendButtons)[i].addEventListener("click", function() {
@@ -317,9 +367,9 @@ var controller = (function(UICtrl, PlayerCtrl) {
                 if (!handleGameOver(i)) {
                     //alternateAttackingPlayer();
                     //hideAllOptions(allButtons);
-                    attackPhase();
+                    attackPhase(i);
                 } else {
-                    // hideAllOptions(allButtons);
+                    hideAllOptions(allButtons);
                 }
             });
 
@@ -348,9 +398,9 @@ var controller = (function(UICtrl, PlayerCtrl) {
                 if (!handleGameOver(i)) {
                     //alternateAttackingPlayer();
                     //hideAllOptions(allButtons);
-                    attackPhase();
+                    attackPhase(i);
                 } else {
-                    // hideAllOptions(allButtons);
+                    hideAllOptions(allButtons);
                 }   
             });
 
@@ -378,9 +428,9 @@ var controller = (function(UICtrl, PlayerCtrl) {
                 if (!handleGameOver(i)) {
                     //alternateAttackingPlayer();
                     //hideAllOptions(allButtons);
-                    attackPhase();
+                    attackPhase(i);
                 } else {
-                    // hideAllOptions(allButtons);
+                    hideAllOptions(allButtons);
                 }
             });
         }
