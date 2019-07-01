@@ -49,6 +49,9 @@ var playerController = (function() {
         getData: function() {
             return data;
         },
+        getSides: function () {
+            return data.sides;
+        },
         getOppositePlayer: function(player) {
             return determineOppositePlayer(player);
         },
@@ -284,12 +287,14 @@ var controller = (function(UICtrl, PlayerCtrl) {
         logDisplay = document.querySelector(DOM.logDisplay);
         
         //could loop through every action type and create an event listener for both of the button for each type using a for in loop, using a single add event listener function
+        // todo change loop variable to "player" instead of generic i
         for (let i = 0; i < data.players.length; i++) {
             
             document.querySelectorAll(DOM.buttons.attackButtons)[i].addEventListener("click", function() {
                 // data.rolls[i] = PlayerCtrl.rollDice(1,data.sides);
-                let roll = PlayerCtrl.rollDice(1,data.sides);
+                let roll = PlayerCtrl.rollDice(1,PlayerCtrl.getSides());
                 
+                // TODO: Need to turn this into a create string function and let something else handle display to UI
                 let logNode = document.createElement("p");
                 logNode.appendChild(document.createTextNode(`Player ${i+1} Attacks for `));
                 for (let j = 0; j < roll.length; j++) {
@@ -304,26 +309,34 @@ var controller = (function(UICtrl, PlayerCtrl) {
                 // add result to logNode entry
                 logNode.appendChild(document.createTextNode("(" + PlayerCtrl.getDiceSum(roll) + ")"));
                 // insert Log Node into DOM Game Log 
-                logDisplay.insertBefore(logNode, logDisplay.firstChild);
                 PlayerCtrl.setRolls(roll, i);
+                logDisplay.insertBefore(logNode, logDisplay.firstChild);
                 defendPhase(i);
             });
 
             document.querySelectorAll(DOM.buttons.focusButtons)[i].addEventListener("click", function() {
-                data.specialPoints[i] -= data.focusCost;
-                document.querySelector(`.player-${i}-special`).textContent = data.specialPoints[i];
-                data.rolls[i] = PlayerCtrl.rollDice(data.focus, data.sides);
+                //subtract the cost of the ability to special points
+                let specialPoints = PlayerCtrl.getSpecialPoints();
+                specialPoints -= data.focusCost;
+                PlayerCtrl.setSpecialPoints(specialPoints, i);
+                // Update UI to reflect change in model data
+                // TODO: move update special Points in UI to view controller
+                document.querySelector(`.player-${i}-special`).textContent = specialPoints;
+
+                let roll = PlayerCtrl.rollDice(data.focus, PlayerCtrl.getSides());
                 let logNode = document.createElement("p");
                 logNode.appendChild(document.createTextNode(`Player ${i+1} Attacks with Focus for `));
-                for (let j = 0; j < data.rolls[i].length; j++) {
+                for (let j = 0; j < roll.length; j++) {
                     // convert roll to text
-                    let diceString = PlayerCtrl.convertNumberToText(data.rolls[i][j]);
+                    let diceString = PlayerCtrl.convertNumberToText(roll[j]);
                     //<i class="fas fa-dice-one"></i>
                     let newDiceIcon = document.createElement("i");
                     newDiceIcon.className = `fas fa-dice-${diceString}`;
                     logNode.appendChild(newDiceIcon);
                 }
-                logNode.appendChild(document.createTextNode("(" + PlayerCtrl.getDiceSum(data.rolls[i]) + ")"));
+                logNode.appendChild(document.createTextNode("(" + PlayerCtrl.getDiceSum(roll) + ")"));
+                // Update data with current roll
+                PlayerCtrl.setRolls(roll, i);
                 logDisplay.insertBefore(logNode, logDisplay.firstChild);
                 //begin defend phase
                 // hideAllOptions(allButtons);
