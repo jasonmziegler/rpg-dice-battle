@@ -83,21 +83,27 @@ var playerController = (function() {
         },
         getRolls: function () {
             // This functions gets rolls from the model controller
+            return data.rolls;
         },
-        setRolls: function () { 
+        setRolls: function (rolls, player) { 
             // This function sets rolls in the model controller
+            data.rolls[player] = rolls;
         },
         getHitPoints: function () { 
             // This function gets hitpoints from the model controller 
+            return data.hitPoints;
         },
-        setHitPoints: function () {
+        setHitPoints: function (hitPoints, player) {
             // This function sets hitpoints in the model controller
+            data.hitPoints[player] = hitPoints;
         },
         getSpecialPoints: function () {
             // This function returns the special point array
+            return data.specialPoints;
         },
-        setSpecialPoints: function () {
+        setSpecialPoints: function (specialPoints, player) {
             // update function to deal with changing special point data
+            data.specialPoints[player] = specialPoints;
         },
         getAttackResult: function (defendingPlayer) {
             let attackingPlayer = determineOppositePlayer(defendingPlayer);
@@ -281,13 +287,14 @@ var controller = (function(UICtrl, PlayerCtrl) {
         for (let i = 0; i < data.players.length; i++) {
             
             document.querySelectorAll(DOM.buttons.attackButtons)[i].addEventListener("click", function() {
-                data.rolls[i] = PlayerCtrl.rollDice(1,data.sides);
+                // data.rolls[i] = PlayerCtrl.rollDice(1,data.sides);
+                let roll = PlayerCtrl.rollDice(1,data.sides);
                 
                 let logNode = document.createElement("p");
                 logNode.appendChild(document.createTextNode(`Player ${i+1} Attacks for `));
-                for (let j = 0; j < data.rolls[i].length; j++) {
+                for (let j = 0; j < roll.length; j++) {
                     // convert roll to text
-                    let diceString = PlayerCtrl.convertNumberToText(data.rolls[i][j]);
+                    let diceString = PlayerCtrl.convertNumberToText(roll[j]);
                     // create dice icon 
                     let newDiceIcon = document.createElement("i");
                     newDiceIcon.className = `fas fa-dice-${diceString}`;
@@ -295,9 +302,10 @@ var controller = (function(UICtrl, PlayerCtrl) {
                     logNode.appendChild(newDiceIcon);
                 }
                 // add result to logNode entry
-                logNode.appendChild(document.createTextNode("(" + PlayerCtrl.getDiceSum(data.rolls[i]) + ")"));
+                logNode.appendChild(document.createTextNode("(" + PlayerCtrl.getDiceSum(roll) + ")"));
                 // insert Log Node into DOM Game Log 
                 logDisplay.insertBefore(logNode, logDisplay.firstChild);
+                PlayerCtrl.setRolls(roll, i);
                 defendPhase(i);
             });
 
