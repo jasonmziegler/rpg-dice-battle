@@ -92,17 +92,17 @@ var playerController = (function() {
             // This function sets rolls in the model controller
             data.rolls[player] = rolls;
         },
-        getHitPoints: function () { 
+        getHitPoints: function (player) { 
             // This function gets hitpoints from the model controller 
-            return data.hitPoints;
+            return data.hitPoints[player];
         },
         setHitPoints: function (hitPoints, player) {
             // This function sets hitpoints in the model controller
             data.hitPoints[player] = hitPoints;
         },
-        getSpecialPoints: function () {
+        getSpecialPoints: function (player) {
             // This function returns the special point array
-            return data.specialPoints;
+            return data.specialPoints[player];
         },
         setSpecialPoints: function (specialPoints, player) {
             // update function to deal with changing special point data
@@ -316,7 +316,7 @@ var controller = (function(UICtrl, PlayerCtrl) {
 
             document.querySelectorAll(DOM.buttons.focusButtons)[i].addEventListener("click", function() {
                 //subtract the cost of the ability to special points
-                let specialPoints = PlayerCtrl.getSpecialPoints();
+                let specialPoints = PlayerCtrl.getSpecialPoints(i);
                 specialPoints -= data.focusCost;
                 PlayerCtrl.setSpecialPoints(specialPoints, i);
                 // Update UI to reflect change in model data
@@ -344,21 +344,26 @@ var controller = (function(UICtrl, PlayerCtrl) {
             });
 
             document.querySelectorAll(DOM.buttons.fireButtons)[i].addEventListener("click", function() {
-                data.specialPoints[i] -= data.fireCost;
-                document.querySelector(`.player-${i}-special`).textContent = data.specialPoints[i];
-                data.rolls[i] = PlayerCtrl.rollDice(data.fire,data.sides);
+                
+                let specialPoints = PlayerCtrl.getSpecialPoints(i);
+                specialPoints -= data.fireCost;
+                PlayerCtrl.setSpecialPoints(specialPoints,i);
+                document.querySelector(`.player-${i}-special`).textContent = specialPoints;
+
+                let roll = PlayerCtrl.rollDice(data.fire, PlayerCtrl.getSides());
                 //console.log("Player 2 Attack Roll", rolls[1]);
                 let logNode = document.createElement("p");
                 logNode.appendChild(document.createTextNode(`Player ${i+1} Casts Fire for `));
-                for (let j = 0; j < data.rolls[i].length; j++) {
+                for (let j = 0; j < roll.length; j++) {
                     // convert roll to text
-                    let diceString = PlayerCtrl.convertNumberToText(data.rolls[i][j]);
+                    let diceString = PlayerCtrl.convertNumberToText(roll[j]);
                     //<i class="fas fa-dice-one"></i>
                     let newDiceIcon = document.createElement("i");
                     newDiceIcon.className = `fas fa-dice-${diceString}`;
                     logNode.appendChild(newDiceIcon);
                 }
-                logNode.appendChild(document.createTextNode("(" + PlayerCtrl.getDiceSum(data.rolls[i]) + ")"));
+                PlayerCtrl.setRolls(roll, i);
+                logNode.appendChild(document.createTextNode("(" + PlayerCtrl.getDiceSum(roll) + ")"));
                 logDisplay.insertBefore(logNode, logDisplay.firstChild);
                 // begin defend phase
                 //hideAllOptions(allButtons);
