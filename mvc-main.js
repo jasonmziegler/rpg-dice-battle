@@ -372,22 +372,24 @@ var controller = (function(UICtrl, PlayerCtrl) {
 
             document.querySelectorAll(DOM.buttons.defendButtons)[i].addEventListener("click", function() {
                 //console.log("Player 1 Defend", defendingPlayer);
-                data.rolls[i] = PlayerCtrl.rollDice(1,data.sides);
+                roll = PlayerCtrl.rollDice(1,PlayerCtrl.getSides());
+                
                 //console.log("Player 1 Defend", rolls[0]);
                 let logNode = document.createElement("p");
                 logNode.appendChild(document.createTextNode(`Player ${i+1} Defends with `));
                 //let diceContainer = document.querySelector(".player-0-dice");
-                for (let j = 0; j < data.rolls[i].length; j++) {
+                for (let j = 0; j < roll.length; j++) {
                     // convert roll to text
-                    let diceString = PlayerCtrl.convertNumberToText(data.rolls[i][j]);
+                    let diceString = PlayerCtrl.convertNumberToText(roll[j]);
                     let newDiceIcon = document.createElement("i");
                     newDiceIcon.className = `fas fa-dice-${diceString}`;
                     logNode.appendChild(newDiceIcon);
                 }
         
-                logNode.appendChild(document.createTextNode("(" + PlayerCtrl.getDiceSum(data.rolls[i]) + ")"));
+                logNode.appendChild(document.createTextNode("(" + PlayerCtrl.getDiceSum(roll) + ")"));
                 // when defend button clicked display dice
                 logDisplay.insertBefore(logNode, logDisplay.firstChild);
+                PlayerCtrl.setRolls(roll, i);
                 handleResult(i, DOM.buttons.defendButtons);
                 
                 if (!handleGameOver(i)) {
