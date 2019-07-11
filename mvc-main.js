@@ -19,15 +19,56 @@ var playerController = (function() {
         actionType: ["",""],
         hitPoints: [ 20, 20],
         specialPoints: [0, 0],
+        // Make dice data an object
+        sides: SIDES,
+        abilities: {
+            attack: {
+                name: "Attack",
+                // may be able to create action buttons
+                icon: "&#9876;",
+                //type used to programatically add event listeners buttons
+                type: "offense",
+                dicePower: 1,
+                spCost: 0
+            },
+            defend: {
+                name: "Defend",
+                type: "defense",
+                dicePower: 1,
+                spCost: 0
+            },
+            focus: {
+                name: "Focus Attack",
+                dicePower: FOCUS,
+                spCost: FOCUSCOST
+            },
+            heal: {
+                name: "Heal",
+                dicePower: HEAL,
+                spCost: HEALCOST
+            },
+            fire: {
+                name: "Fire Ball",
+                dicePower: FIRE,
+                spCost: FIRECOST
+            },
+            diamond: {
+                name: "Diamond Skin",
+                dicePower: DIAMOND,
+                spCost: DIAMONDCOST
+            }
+        },
         sides: SIDES,
         focus: FOCUS,
         heal: HEAL,
         fire: FIRE,
         diamond: DIAMOND,
-        focusCost: FOCUSCOST,
-        healCost: HEALCOST,
-        fireCost: FIRECOST,
-        diamondCost: DIAMONDCOST
+        spCost: {
+            focusCost: FOCUSCOST,
+            healCost: HEALCOST,
+            fireCost: FIRECOST,
+            diamondCost: DIAMONDCOST
+        }
         
 
     }
@@ -51,6 +92,12 @@ var playerController = (function() {
         },
         getSides: function () {
             return data.sides;
+        },
+        getAbilities: function () {
+            return data.abilities;
+        },
+        getPlayerAmount: function() {
+            return data.players;
         },
         getOppositePlayer: function(player) {
             return determineOppositePlayer(player);
@@ -281,22 +328,25 @@ var controller = (function(UICtrl, PlayerCtrl) {
         // }
     }
 
-    var setupEventListeners = function(data, DOM) {
+    var setupEventListeners = function(DOM) {
         
         //console.log(DOM);
         logDisplay = document.querySelector(DOM.logDisplay);
-        
+        // let sides = PlayerCtrl.getSides();
+        // let sides = PlayerCtrl.getSides();
+        // let abilities = PlayerCtrl.getAbilities();
+        let playerAmount = PlayerCtrl.getPlayerAmount().length;
         //could loop through every action type and create an event listener for both of the button for each type using a for in loop, using a single add event listener function
         // todo change loop variable to "player" instead of generic i
-        for (let i = 0; i < data.players.length; i++) {
+        for (let player = 0; player < playerAmount; player++) {
             
-            document.querySelectorAll(DOM.buttons.attackButtons)[i].addEventListener("click", function() {
-                // data.rolls[i] = PlayerCtrl.rollDice(1,data.sides);
-                let roll = PlayerCtrl.rollDice(1,PlayerCtrl.getSides());
-                
+            document.querySelectorAll(DOM.buttons.attackButtons)[player].addEventListener("click", function() {
+                let ability = PlayerCtrl.getAbilities().attack;
+                let roll = PlayerCtrl.rollDice(ability.dicePower, PlayerCtrl.getSides());
+
                 // TODO: Need to turn this into a create string function and let something else handle display to UI
                 let logNode = document.createElement("p");
-                logNode.appendChild(document.createTextNode(`Player ${i+1} Attacks for `));
+                logNode.appendChild(document.createTextNode(`Player ${player+1} Attacks for `));
                 for (let j = 0; j < roll.length; j++) {
                     // convert roll to text
                     let diceString = PlayerCtrl.convertNumberToText(roll[j]);
@@ -309,23 +359,24 @@ var controller = (function(UICtrl, PlayerCtrl) {
                 // add result to logNode entry
                 logNode.appendChild(document.createTextNode("(" + PlayerCtrl.getDiceSum(roll) + ")"));
                 // insert Log Node into DOM Game Log 
-                PlayerCtrl.setRolls(roll, i);
+                PlayerCtrl.setRolls(roll, player);
                 logDisplay.insertBefore(logNode, logDisplay.firstChild);
-                defendPhase(i);
+                defendPhase(player);
             });
 
-            document.querySelectorAll(DOM.buttons.focusButtons)[i].addEventListener("click", function() {
+            document.querySelectorAll(DOM.buttons.focusButtons)[player].addEventListener("click", function() {
                 //subtract the cost of the ability to special points
-                let specialPoints = PlayerCtrl.getSpecialPoints(i);
-                specialPoints -= data.focusCost;
-                PlayerCtrl.setSpecialPoints(specialPoints, i);
+                let ability = PlayerCtrl.getAbilities().focus;
+                let specialPoints = PlayerCtrl.getSpecialPoints(player);
+                specialPoints -= ability.spCost;
+                PlayerCtrl.setSpecialPoints(specialPoints, player);
                 // Update UI to reflect change in model data
                 // TODO: move update special Points in UI to view controller
-                document.querySelector(`.player-${i}-special`).textContent = specialPoints;
+                document.querySelector(`.player-${player}-special`).textContent = specialPoints;
 
-                let roll = PlayerCtrl.rollDice(data.focus, PlayerCtrl.getSides());
+                let roll = PlayerCtrl.rollDice(ability.dicePower, PlayerCtrl.getSides());
                 let logNode = document.createElement("p");
-                logNode.appendChild(document.createTextNode(`Player ${i+1} Attacks with Focus for `));
+                logNode.appendChild(document.createTextNode(`Player ${player+1} Attacks with Focus for `));
                 for (let j = 0; j < roll.length; j++) {
                     // convert roll to text
                     let diceString = PlayerCtrl.convertNumberToText(roll[j]);
@@ -336,25 +387,25 @@ var controller = (function(UICtrl, PlayerCtrl) {
                 }
                 logNode.appendChild(document.createTextNode("(" + PlayerCtrl.getDiceSum(roll) + ")"));
                 // Update data with current roll
-                PlayerCtrl.setRolls(roll, i);
+                PlayerCtrl.setRolls(roll, player);
                 logDisplay.insertBefore(logNode, logDisplay.firstChild);
                 //begin defend phase
                 // hideAllOptions(allButtons);
-                defendPhase(i);
+                defendPhase(player);
             });
 
-            document.querySelectorAll(DOM.buttons.fireButtons)[i].addEventListener("click", function() {
-                
-                let specialPoints = PlayerCtrl.getSpecialPoints(i);
-                specialPoints -= data.fireCost;
-                PlayerCtrl.setSpecialPoints(specialPoints,i);
+            document.querySelectorAll(DOM.buttons.fireButtons)[player].addEventListener("click", function() {
+                let ability = PlayerCtrl.getAbilities().fire;
+                let specialPoints = PlayerCtrl.getSpecialPoints(player);
+                specialPoints -= ability.spCost;
+                PlayerCtrl.setSpecialPoints(specialPoints,player);
                 // this should be a call to the UI Controller
-                document.querySelector(`.player-${i}-special`).textContent = specialPoints;
+                document.querySelector(`.player-${player}-special`).textContent = specialPoints;
 
-                let roll = PlayerCtrl.rollDice(data.fire, PlayerCtrl.getSides());
-                //console.log("Player 2 Attack Roll", rolls[1]);
+                let roll = PlayerCtrl.rollDice(ability.dicePower, PlayerCtrl.getSides());
+                //console.log("Player 2 Attack Roll", roll);
                 let logNode = document.createElement("p");
-                logNode.appendChild(document.createTextNode(`Player ${i+1} Casts Fire for `));
+                logNode.appendChild(document.createTextNode(`Player ${player+1} Casts Fire for `));
                 for (let j = 0; j < roll.length; j++) {
                     // convert roll to text
                     let diceString = PlayerCtrl.convertNumberToText(roll[j]);
@@ -363,21 +414,20 @@ var controller = (function(UICtrl, PlayerCtrl) {
                     newDiceIcon.className = `fas fa-dice-${diceString}`;
                     logNode.appendChild(newDiceIcon);
                 }
-                PlayerCtrl.setRolls(roll, i);
+                PlayerCtrl.setRolls(roll, player);
                 logNode.appendChild(document.createTextNode("(" + PlayerCtrl.getDiceSum(roll) + ")"));
                 logDisplay.insertBefore(logNode, logDisplay.firstChild);
                 // begin defend phase
                 //hideAllOptions(allButtons);
-                defendPhase(i);
+                defendPhase(player);
             });
 
-            document.querySelectorAll(DOM.buttons.defendButtons)[i].addEventListener("click", function() {
-                //console.log("Player 1 Defend", defendingPlayer);
-                roll = PlayerCtrl.rollDice(1,PlayerCtrl.getSides());
-                // console.log('roll', roll);
-                //console.log("Player 1 Defend", rolls[0]);
+            document.querySelectorAll(DOM.buttons.defendButtons)[player].addEventListener("click", function() {
+                let ability = PlayerCtrl.getAbilities().defend;
+                roll = PlayerCtrl.rollDice(ability.dicePower, PlayerCtrl.getSides());
+                
                 let logNode = document.createElement("p");
-                logNode.appendChild(document.createTextNode(`Player ${i+1} Defends with `));
+                logNode.appendChild(document.createTextNode(`Player ${player+1} Defends with `));
                 //let diceContainer = document.querySelector(".player-0-dice");
                 for (let j = 0; j < roll.length; j++) {
                     // convert roll to text
@@ -390,28 +440,33 @@ var controller = (function(UICtrl, PlayerCtrl) {
                 logNode.appendChild(document.createTextNode("(" + PlayerCtrl.getDiceSum(roll) + ")"));
                 // when defend button clicked display dice
                 logDisplay.insertBefore(logNode, logDisplay.firstChild);
-                PlayerCtrl.setRolls(roll, i);
-                handleResult(i, DOM.buttons.defendButtons);
+                PlayerCtrl.setRolls(roll, player);
+                handleResult(player, DOM.buttons.defendButtons);
                 
-                if (!handleGameOver(i)) {
+                if (!handleGameOver(player)) {
                     //alternateAttackingPlayer();
                     //hideAllOptions(allButtons);
-                    attackPhase(i);
+                    attackPhase(player);
                 } else {
                     hideAllOptions(allButtons);
                 }
             });
 
-            document.querySelectorAll(DOM.buttons.diamondButtons)[i].addEventListener("click", function() {
-                data.specialPoints[i] -= data.diamondCost;
-                document.querySelector(`.player-${i}-special`).textContent = data.specialPoints[i];
-                //console.log("Player 1 Defend", defendingPlayer);
+            document.querySelectorAll(DOM.buttons.diamondButtons)[player].addEventListener("click", function() {
+                
+                let ability = PlayerCtrl.getAbilities().diamond;
+                
+                // this can be turned into a function handleSpecialPoints
+                let specialPoints = PlayerCtrl.getSpecialPoints(player);
+                specialPoints -= ability.spCost;
+                PlayerCtrl.setSpecialPoints(specialPoints, player);
+                document.querySelector(`.player-${player}-special`).textContent = specialPoints;
+                
                 let roll = PlayerCtrl.rollDice(data.diamond, PlayerCtrl.getSides());
-                //data.rolls[i] = PlayerCtrl.rollDice(data.diamond,data.sides);
-                console.log('roll', roll);
+                
                 let logNode = document.createElement("p");
-                logNode.appendChild(document.createTextNode(`Player ${i+1} defends with Diamond Skin for `));
-                //let diceContainer = document.querySelector(".player-0-dice");
+                logNode.appendChild(document.createTextNode(`Player ${player+1} defends with Diamond Skin for `));
+                
                 for (let j = 0; j < roll.length; j++) {
                     // convert roll to text
                     let diceString = PlayerCtrl.convertNumberToText(roll[j]);
@@ -423,27 +478,31 @@ var controller = (function(UICtrl, PlayerCtrl) {
                 logNode.appendChild(document.createTextNode("(" + PlayerCtrl.getDiceSum(roll) + ")"));
                 // when defend button clicked display dice
                 logDisplay.insertBefore(logNode, logDisplay.firstChild);
-                PlayerCtrl.setRolls(roll, i);
-                handleResult(i, DOM.buttons.diamondButtons);
+                PlayerCtrl.setRolls(roll, player);
+                handleResult(player, DOM.buttons.diamondButtons);
                 
-                if (!handleGameOver(i)) {
+                if (!handleGameOver(player)) {
                     //alternateAttackingPlayer();
                     //hideAllOptions(allButtons);
-                    attackPhase(i);
+                    attackPhase(player);
                 } else {
                     hideAllOptions(allButtons);
                 }   
             });
 
-            document.querySelectorAll(DOM.buttons.healButtons)[i].addEventListener("click", function() {
-                data.specialPoints[i] -= data.healCost;
-                document.querySelector(`.player-${i}-special`).textContent = data.specialPoints[i];
+            document.querySelectorAll(DOM.buttons.healButtons)[player].addEventListener("click", function() {
+                
+                let ability = PlayerCtrl.getAbilities().heal;
+                let specialPoints = PlayerCtrl.getSpecialPoints(player);
+                specialPoints -= ability.spCost;
+                PlayerCtrl.setSpecialPoints(specialPoints, player);
+                document.querySelector(`.player-${player}-special`).textContent = specialPoints;
                 //console.log("Player 1 Defend", defendingPlayer);
                 //data.rolls[i] = PlayerCtrl.rollDice(data.heal, data.sides);
                 let roll = PlayerCtrl.rollDice(data.heal, PlayerCtrl.getSides());
                 //console.log("Player 1 Defend", rolls[0]);
                 let logNode = document.createElement("p");
-                logNode.appendChild(document.createTextNode(`Player ${i+1} casts Heal for `));
+                logNode.appendChild(document.createTextNode(`Player ${player+1} casts Heal for `));
         
                 for (let j = 0; j < roll.length; j++) {
                     // convert roll to text
@@ -455,13 +514,13 @@ var controller = (function(UICtrl, PlayerCtrl) {
         
                 logNode.appendChild(document.createTextNode("(" + PlayerCtrl.getDiceSum(roll) + ")"));
                 // when defend button clicked display dice
-                PlayerCtrl.setRolls(roll, i);
+                PlayerCtrl.setRolls(roll, player);
                 logDisplay.insertBefore(logNode, logDisplay.firstChild);
-                handleResult(i, DOM.buttons.healButtons);
-                if (!handleGameOver(i)) {
+                handleResult(player, DOM.buttons.healButtons);
+                if (!handleGameOver(player)) {
                     //alternateAttackingPlayer();
                     //hideAllOptions(allButtons);
-                    attackPhase(i);
+                    attackPhase(player);
                 } else {
                     hideAllOptions(allButtons);
                 }
@@ -475,7 +534,7 @@ var controller = (function(UICtrl, PlayerCtrl) {
             let data = PlayerCtrl.getData();
             var DOM =  UICtrl.getDOMstrings();
             data.startingPlayer = data.players[0];
-            setupEventListeners(data,DOM);
+            setupEventListeners(DOM);
             //UICtrl.hideAllOptions(DOM.buttons);
             console.log("The application has started.");
             return data;
