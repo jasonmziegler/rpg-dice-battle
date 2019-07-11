@@ -25,6 +25,7 @@ var playerController = (function() {
             attack: {
                 name: "Attack",
                 // may be able to create action buttons
+                verb: "attacks",
                 icon: "&#9876;",
                 //type used to programatically add event listeners buttons
                 type: "offense",
@@ -328,13 +329,27 @@ var controller = (function(UICtrl, PlayerCtrl) {
         // }
     }
 
+    var createGameLogActionNode = function(player, ability, roll) {
+        let logNode = document.createElement("p");
+        logNode.appendChild(document.createTextNode(`Player ${player+1} ${ability.verb} for `));
+        for (let j = 0; j < roll.length; j++) {
+            // convert roll to text
+            let diceString = PlayerCtrl.convertNumberToText(roll[j]);
+            // create dice icon 
+            let newDiceIcon = document.createElement("i");
+            newDiceIcon.className = `fas fa-dice-${diceString}`;
+            // add dice icon to log Node Entry
+            logNode.appendChild(newDiceIcon);
+        }
+        // add result to logNode entry
+        logNode.appendChild(document.createTextNode("(" + PlayerCtrl.getDiceSum(roll) + ")"));
+        return logNode;
+    }
+
     var setupEventListeners = function(DOM) {
         
-        //console.log(DOM);
         logDisplay = document.querySelector(DOM.logDisplay);
-        // let sides = PlayerCtrl.getSides();
-        // let sides = PlayerCtrl.getSides();
-        // let abilities = PlayerCtrl.getAbilities();
+        
         let playerAmount = PlayerCtrl.getPlayerAmount().length;
         //could loop through every action type and create an event listener for both of the button for each type using a for in loop, using a single add event listener function
         // todo change loop variable to "player" instead of generic i
@@ -343,24 +358,9 @@ var controller = (function(UICtrl, PlayerCtrl) {
             document.querySelectorAll(DOM.buttons.attackButtons)[player].addEventListener("click", function() {
                 let ability = PlayerCtrl.getAbilities().attack;
                 let roll = PlayerCtrl.rollDice(ability.dicePower, PlayerCtrl.getSides());
-
-                // TODO: Need to turn this into a create string function and let something else handle display to UI
-                let logNode = document.createElement("p");
-                logNode.appendChild(document.createTextNode(`Player ${player+1} Attacks for `));
-                for (let j = 0; j < roll.length; j++) {
-                    // convert roll to text
-                    let diceString = PlayerCtrl.convertNumberToText(roll[j]);
-                    // create dice icon 
-                    let newDiceIcon = document.createElement("i");
-                    newDiceIcon.className = `fas fa-dice-${diceString}`;
-                    // add dice icon to log Node Entry
-                    logNode.appendChild(newDiceIcon);
-                }
-                // add result to logNode entry
-                logNode.appendChild(document.createTextNode("(" + PlayerCtrl.getDiceSum(roll) + ")"));
-                // insert Log Node into DOM Game Log 
                 PlayerCtrl.setRolls(roll, player);
-                logDisplay.insertBefore(logNode, logDisplay.firstChild);
+                // insert Log Node into DOM Game Log 
+                logDisplay.insertBefore(createGameLogActionNode(player, ability, roll), logDisplay.firstChild);
                 defendPhase(player);
             });
 
