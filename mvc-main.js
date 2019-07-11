@@ -439,21 +439,23 @@ var controller = (function(UICtrl, PlayerCtrl) {
                 data.specialPoints[i] -= data.healCost;
                 document.querySelector(`.player-${i}-special`).textContent = data.specialPoints[i];
                 //console.log("Player 1 Defend", defendingPlayer);
-                data.rolls[i] = PlayerCtrl.rollDice(data.heal, data.sides);
+                //data.rolls[i] = PlayerCtrl.rollDice(data.heal, data.sides);
+                let roll = PlayerCtrl.rollDice(data.heal, PlayerCtrl.getSides());
                 //console.log("Player 1 Defend", rolls[0]);
                 let logNode = document.createElement("p");
                 logNode.appendChild(document.createTextNode(`Player ${i+1} casts Heal for `));
         
-                for (let j = 0; j < data.rolls[i].length; j++) {
+                for (let j = 0; j < roll.length; j++) {
                     // convert roll to text
-                    let diceString = PlayerCtrl.convertNumberToText(data.rolls[i][j]);
+                    let diceString = PlayerCtrl.convertNumberToText(roll[j]);
                     let newDiceIcon = document.createElement("i");
                     newDiceIcon.className = `fas fa-dice-${diceString}`;
                     logNode.appendChild(newDiceIcon);
                 }
         
-                logNode.appendChild(document.createTextNode("(" + PlayerCtrl.getDiceSum(data.rolls[i]) + ")"));
+                logNode.appendChild(document.createTextNode("(" + PlayerCtrl.getDiceSum(roll) + ")"));
                 // when defend button clicked display dice
+                PlayerCtrl.setRolls(roll, i);
                 logDisplay.insertBefore(logNode, logDisplay.firstChild);
                 handleResult(i, DOM.buttons.healButtons);
                 if (!handleGameOver(i)) {
