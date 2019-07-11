@@ -348,6 +348,7 @@ var controller = (function(UICtrl, PlayerCtrl) {
                 let specialPoints = PlayerCtrl.getSpecialPoints(i);
                 specialPoints -= data.fireCost;
                 PlayerCtrl.setSpecialPoints(specialPoints,i);
+                // this should be a call to the UI Controller
                 document.querySelector(`.player-${i}-special`).textContent = specialPoints;
 
                 let roll = PlayerCtrl.rollDice(data.fire, PlayerCtrl.getSides());
@@ -373,7 +374,7 @@ var controller = (function(UICtrl, PlayerCtrl) {
             document.querySelectorAll(DOM.buttons.defendButtons)[i].addEventListener("click", function() {
                 //console.log("Player 1 Defend", defendingPlayer);
                 roll = PlayerCtrl.rollDice(1,PlayerCtrl.getSides());
-                
+                // console.log('roll', roll);
                 //console.log("Player 1 Defend", rolls[0]);
                 let logNode = document.createElement("p");
                 logNode.appendChild(document.createTextNode(`Player ${i+1} Defends with `));
@@ -405,22 +406,24 @@ var controller = (function(UICtrl, PlayerCtrl) {
                 data.specialPoints[i] -= data.diamondCost;
                 document.querySelector(`.player-${i}-special`).textContent = data.specialPoints[i];
                 //console.log("Player 1 Defend", defendingPlayer);
-                data.rolls[i] = PlayerCtrl.rollDice(data.diamond,data.sides);
-    
+                let roll = PlayerCtrl.rollDice(data.diamond, PlayerCtrl.getSides());
+                //data.rolls[i] = PlayerCtrl.rollDice(data.diamond,data.sides);
+                console.log('roll', roll);
                 let logNode = document.createElement("p");
                 logNode.appendChild(document.createTextNode(`Player ${i+1} defends with Diamond Skin for `));
                 //let diceContainer = document.querySelector(".player-0-dice");
-                for (let j = 0; j < data.rolls[i].length; j++) {
+                for (let j = 0; j < roll.length; j++) {
                     // convert roll to text
-                    let diceString = PlayerCtrl.convertNumberToText(data.rolls[i][j]);
+                    let diceString = PlayerCtrl.convertNumberToText(roll[j]);
                     let newDiceIcon = document.createElement("i");
                     newDiceIcon.className = `fas fa-dice-${diceString}`;
                     logNode.appendChild(newDiceIcon);
                 }
         
-                logNode.appendChild(document.createTextNode("(" + PlayerCtrl.getDiceSum(data.rolls[i]) + ")"));
+                logNode.appendChild(document.createTextNode("(" + PlayerCtrl.getDiceSum(roll) + ")"));
                 // when defend button clicked display dice
                 logDisplay.insertBefore(logNode, logDisplay.firstChild);
+                PlayerCtrl.setRolls(roll, i);
                 handleResult(i, DOM.buttons.diamondButtons);
                 
                 if (!handleGameOver(i)) {
