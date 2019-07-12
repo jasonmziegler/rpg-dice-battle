@@ -25,7 +25,7 @@ var playerController = (function() {
             attack: {
                 name: "Attack",
                 // may be able to create action buttons
-                verb: "attacks",
+                verb: "Attacks",
                 icon: "&#9876;",
                 //type used to programatically add event listeners buttons
                 type: "offense",
@@ -34,27 +34,32 @@ var playerController = (function() {
             },
             defend: {
                 name: "Defend",
+                verb: "Defends",
                 type: "defense",
                 dicePower: 1,
                 spCost: 0
             },
             focus: {
                 name: "Focus Attack",
+                verb: "attacks with Focus",
                 dicePower: FOCUS,
                 spCost: FOCUSCOST
             },
             heal: {
                 name: "Heal",
+                verb: "casts a Heal spell",
                 dicePower: HEAL,
                 spCost: HEALCOST
             },
             fire: {
                 name: "Fire Ball",
+                verb: "casts Fire Ball spell",
                 dicePower: FIRE,
                 spCost: FIRECOST
             },
             diamond: {
                 name: "Diamond Skin",
+                verb: "casts Diamond Skin",
                 dicePower: DIAMOND,
                 spCost: DIAMONDCOST
             }
@@ -215,7 +220,7 @@ var UIController = (function() {
         player1Name: ".player-0-name",
         player2Name: ".player-1-name",
         player1Special: ".player-0-special",
-        player2Special: ".player-0-special",
+        player2Special: ".player-1-special",
         player1Health: ".player-0-health",
         player2Health: ".player-1-health",
         focusCost: ".focus-cost",
@@ -252,14 +257,19 @@ var UIController = (function() {
                 }
             } 
         },
-        updateHitPoints: function(player) {
+        updateHitPoints: function(player, hitPoints) {
             //this method will update players hitpoints
         },
-        updateSpecialPoints: function(player) {
+        updateSpecialPoints: function(player, specialPoints) {
             // this method will update the players Special Points
+            let playerToUpdate = `player${player+1}Special`;
+            let specialPointsDisplay = DOMstrings[playerToUpdate];
+            document.querySelector(specialPointsDisplay).textContent = specialPoints;
         },
-        displayToLog: function (message) {
+        displayToLog: function (logNode) {
             // this method will create a text node with a given string and display it to the game log
+            logDisplay = document.querySelector(DOMstrings.logDisplay);
+            logDisplay.insertBefore(logNode, logDisplay.firstChild);
         },
         displayActiveAttackButtons: function () {
             // this method will display the buttons that are available to the current attacking player
@@ -345,6 +355,13 @@ var controller = (function(UICtrl, PlayerCtrl) {
         logNode.appendChild(document.createTextNode("(" + PlayerCtrl.getDiceSum(roll) + ")"));
         return logNode;
     }
+    
+    var handleSpecialPoints = function(player, ability) {
+        let specialPoints = PlayerCtrl.getSpecialPoints(player);
+        specialPoints -= ability.spCost;
+        PlayerCtrl.setSpecialPoints(specialPoints, player);
+        return specialPoints;
+    }
 
     var setupEventListeners = function(DOM) {
         
@@ -360,35 +377,23 @@ var controller = (function(UICtrl, PlayerCtrl) {
                 let roll = PlayerCtrl.rollDice(ability.dicePower, PlayerCtrl.getSides());
                 PlayerCtrl.setRolls(roll, player);
                 // insert Log Node into DOM Game Log 
-                logDisplay.insertBefore(createGameLogActionNode(player, ability, roll), logDisplay.firstChild);
+                let logNode = createGameLogActionNode(player, ability, roll);
+                UIController.displayToLog(logNode);
                 defendPhase(player);
             });
 
             document.querySelectorAll(DOM.buttons.focusButtons)[player].addEventListener("click", function() {
-                //subtract the cost of the ability to special points
+                
                 let ability = PlayerCtrl.getAbilities().focus;
-                let specialPoints = PlayerCtrl.getSpecialPoints(player);
-                specialPoints -= ability.spCost;
-                PlayerCtrl.setSpecialPoints(specialPoints, player);
+                //subtract the cost of the ability to special points
+                let specialPoints = handleSpecialPoints(player, ability);
                 // Update UI to reflect change in model data
-                // TODO: move update special Points in UI to view controller
-                document.querySelector(`.player-${player}-special`).textContent = specialPoints;
-
+                UIController.updateSpecialPoints(player, specialPoints);
                 let roll = PlayerCtrl.rollDice(ability.dicePower, PlayerCtrl.getSides());
-                let logNode = document.createElement("p");
-                logNode.appendChild(document.createTextNode(`Player ${player+1} Attacks with Focus for `));
-                for (let j = 0; j < roll.length; j++) {
-                    // convert roll to text
-                    let diceString = PlayerCtrl.convertNumberToText(roll[j]);
-                    //<i class="fas fa-dice-one"></i>
-                    let newDiceIcon = document.createElement("i");
-                    newDiceIcon.className = `fas fa-dice-${diceString}`;
-                    logNode.appendChild(newDiceIcon);
-                }
-                logNode.appendChild(document.createTextNode("(" + PlayerCtrl.getDiceSum(roll) + ")"));
                 // Update data with current roll
                 PlayerCtrl.setRolls(roll, player);
-                logDisplay.insertBefore(logNode, logDisplay.firstChild);
+                let logNode = createGameLogActionNode(player, ability, roll);
+                UIController.displayToLog(logNode);
                 //begin defend phase
                 // hideAllOptions(allButtons);
                 defendPhase(player);
@@ -396,27 +401,15 @@ var controller = (function(UICtrl, PlayerCtrl) {
 
             document.querySelectorAll(DOM.buttons.fireButtons)[player].addEventListener("click", function() {
                 let ability = PlayerCtrl.getAbilities().fire;
-                let specialPoints = PlayerCtrl.getSpecialPoints(player);
-                specialPoints -= ability.spCost;
-                PlayerCtrl.setSpecialPoints(specialPoints,player);
+                let specialPoints = handleSpecialPoints(player, ability);
                 // this should be a call to the UI Controller
-                document.querySelector(`.player-${player}-special`).textContent = specialPoints;
-
+                // document.querySelector(`.player-${player}-special`).textContent = specialPoints;
+                UIController.updateSpecialPoints(player, specialPoints);
                 let roll = PlayerCtrl.rollDice(ability.dicePower, PlayerCtrl.getSides());
                 //console.log("Player 2 Attack Roll", roll);
-                let logNode = document.createElement("p");
-                logNode.appendChild(document.createTextNode(`Player ${player+1} Casts Fire for `));
-                for (let j = 0; j < roll.length; j++) {
-                    // convert roll to text
-                    let diceString = PlayerCtrl.convertNumberToText(roll[j]);
-                    //<i class="fas fa-dice-one"></i>
-                    let newDiceIcon = document.createElement("i");
-                    newDiceIcon.className = `fas fa-dice-${diceString}`;
-                    logNode.appendChild(newDiceIcon);
-                }
-                PlayerCtrl.setRolls(roll, player);
-                logNode.appendChild(document.createTextNode("(" + PlayerCtrl.getDiceSum(roll) + ")"));
-                logDisplay.insertBefore(logNode, logDisplay.firstChild);
+                let logNode = createGameLogActionNode(player, ability, roll);
+                // logDisplay.insertBefore(logNode, logDisplay.firstChild);
+                UIController.displayToLog(logNode);
                 // begin defend phase
                 //hideAllOptions(allButtons);
                 defendPhase(player);
@@ -426,20 +419,8 @@ var controller = (function(UICtrl, PlayerCtrl) {
                 let ability = PlayerCtrl.getAbilities().defend;
                 roll = PlayerCtrl.rollDice(ability.dicePower, PlayerCtrl.getSides());
                 
-                let logNode = document.createElement("p");
-                logNode.appendChild(document.createTextNode(`Player ${player+1} Defends with `));
-                //let diceContainer = document.querySelector(".player-0-dice");
-                for (let j = 0; j < roll.length; j++) {
-                    // convert roll to text
-                    let diceString = PlayerCtrl.convertNumberToText(roll[j]);
-                    let newDiceIcon = document.createElement("i");
-                    newDiceIcon.className = `fas fa-dice-${diceString}`;
-                    logNode.appendChild(newDiceIcon);
-                }
-        
-                logNode.appendChild(document.createTextNode("(" + PlayerCtrl.getDiceSum(roll) + ")"));
-                // when defend button clicked display dice
-                logDisplay.insertBefore(logNode, logDisplay.firstChild);
+                let logNode = createGameLogActionNode(player, ability,roll);
+                UIController.displayToLog(logNode);
                 PlayerCtrl.setRolls(roll, player);
                 handleResult(player, DOM.buttons.defendButtons);
                 
@@ -455,30 +436,16 @@ var controller = (function(UICtrl, PlayerCtrl) {
             document.querySelectorAll(DOM.buttons.diamondButtons)[player].addEventListener("click", function() {
                 
                 let ability = PlayerCtrl.getAbilities().diamond;
-                
-                // this can be turned into a function handleSpecialPoints
-                let specialPoints = PlayerCtrl.getSpecialPoints(player);
-                specialPoints -= ability.spCost;
-                PlayerCtrl.setSpecialPoints(specialPoints, player);
-                document.querySelector(`.player-${player}-special`).textContent = specialPoints;
-                
-                let roll = PlayerCtrl.rollDice(data.diamond, PlayerCtrl.getSides());
-                
-                let logNode = document.createElement("p");
-                logNode.appendChild(document.createTextNode(`Player ${player+1} defends with Diamond Skin for `));
-                
-                for (let j = 0; j < roll.length; j++) {
-                    // convert roll to text
-                    let diceString = PlayerCtrl.convertNumberToText(roll[j]);
-                    let newDiceIcon = document.createElement("i");
-                    newDiceIcon.className = `fas fa-dice-${diceString}`;
-                    logNode.appendChild(newDiceIcon);
-                }
-        
-                logNode.appendChild(document.createTextNode("(" + PlayerCtrl.getDiceSum(roll) + ")"));
-                // when defend button clicked display dice
-                logDisplay.insertBefore(logNode, logDisplay.firstChild);
+                let specialPoints = handleSpecialPoints(player, ability);
+                // handle with UI
+                // document.querySelector(`.player-${player}-special`).textContent = specialPoints;
+                UIController.updateSpecialPoints(player, specialPoints);
+                let roll = PlayerCtrl.rollDice(ability.dicePower, PlayerCtrl.getSides());
                 PlayerCtrl.setRolls(roll, player);
+                let logNode = createGameLogActionNode(player, ability, roll);
+                
+                UIController.displayToLog(logNode);
+                
                 handleResult(player, DOM.buttons.diamondButtons);
                 
                 if (!handleGameOver(player)) {
@@ -493,29 +460,13 @@ var controller = (function(UICtrl, PlayerCtrl) {
             document.querySelectorAll(DOM.buttons.healButtons)[player].addEventListener("click", function() {
                 
                 let ability = PlayerCtrl.getAbilities().heal;
-                let specialPoints = PlayerCtrl.getSpecialPoints(player);
-                specialPoints -= ability.spCost;
-                PlayerCtrl.setSpecialPoints(specialPoints, player);
-                document.querySelector(`.player-${player}-special`).textContent = specialPoints;
-                //console.log("Player 1 Defend", defendingPlayer);
-                //data.rolls[i] = PlayerCtrl.rollDice(data.heal, data.sides);
-                let roll = PlayerCtrl.rollDice(data.heal, PlayerCtrl.getSides());
-                //console.log("Player 1 Defend", rolls[0]);
-                let logNode = document.createElement("p");
-                logNode.appendChild(document.createTextNode(`Player ${player+1} casts Heal for `));
-        
-                for (let j = 0; j < roll.length; j++) {
-                    // convert roll to text
-                    let diceString = PlayerCtrl.convertNumberToText(roll[j]);
-                    let newDiceIcon = document.createElement("i");
-                    newDiceIcon.className = `fas fa-dice-${diceString}`;
-                    logNode.appendChild(newDiceIcon);
-                }
-        
-                logNode.appendChild(document.createTextNode("(" + PlayerCtrl.getDiceSum(roll) + ")"));
-                // when defend button clicked display dice
+                let specialPoints = handleSpecialPoints(player, ability);
+                // document.querySelector(`.player-${player}-special`).textContent = specialPoints;                
+                UIController.updateSpecialPoints(player, specialPoints);
+                let roll = PlayerCtrl.rollDice(ability.dicePower, PlayerCtrl.getSides());
                 PlayerCtrl.setRolls(roll, player);
-                logDisplay.insertBefore(logNode, logDisplay.firstChild);
+                let logNode = createGameLogActionNode(player, ability, roll);
+                UIController.displayToLog(logNode);
                 handleResult(player, DOM.buttons.healButtons);
                 if (!handleGameOver(player)) {
                     //alternateAttackingPlayer();
