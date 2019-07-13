@@ -15,11 +15,8 @@ var playerController = (function() {
         startingPlayer: 0,
         players: [0, 1],
         rolls: [[],[]],
-        // actionType may be necessary for when consolidating the button click function to a single function.
-        actionType: ["",""],
         hitPoints: [ 20, 20],
         specialPoints: [0, 0],
-        // Make dice data an object
         sides: SIDES,
         abilities: {
             attack: {
@@ -63,20 +60,7 @@ var playerController = (function() {
                 dicePower: DIAMOND,
                 spCost: DIAMONDCOST
             }
-        },
-        sides: SIDES,
-        focus: FOCUS,
-        heal: HEAL,
-        fire: FIRE,
-        diamond: DIAMOND,
-        spCost: {
-            focusCost: FOCUSCOST,
-            healCost: HEALCOST,
-            fireCost: FIRECOST,
-            diamondCost: DIAMONDCOST
         }
-        
-
     }
 
     var sumDice = function (diceArray) {
@@ -104,6 +88,9 @@ var playerController = (function() {
         },
         getPlayerAmount: function() {
             return data.players;
+        },
+        getStartingPlayer: function() {
+            return data.startingPlayer;
         },
         getOppositePlayer: function(player) {
             return determineOppositePlayer(player);
@@ -242,11 +229,12 @@ var UIController = (function() {
             return DOMstrings;
         },
 
-        hideAllOptions: function(allButtons) {
+        hideAllOptions: function() {
            //AllButtons is an object with node lists of the types of interactive buttons. 
             //the following for loop sets each display value to none
             //which hides all of the buttons.
             //console.log(allButtons);
+            let allButtons = DOMstrings.buttons;
             for (const property in allButtons) {
                 if (allButtons.hasOwnProperty(property)) {
                     let propertyButtonNodes = document.querySelectorAll(allButtons[property]);
@@ -259,6 +247,9 @@ var UIController = (function() {
         },
         updateHitPoints: function(player, hitPoints) {
             //this method will update players hitpoints
+            let playerToUpdate = `player${player+1}Health`;
+            let healthPointsDisplay = DOMstrings[playerToUpdate];
+            document.querySelector(healthPointsDisplay).textContent = hitPoints;
         },
         updateSpecialPoints: function(player, specialPoints) {
             // this method will update the players Special Points
@@ -274,7 +265,7 @@ var UIController = (function() {
         displayActiveAttackButtons: function () {
             // this method will display the buttons that are available to the current attacking player
         },
-        displayActiveDefenceButtons: function () {
+        displayActiveDefendButtons: function () {
             // this method will display the buttons that are available to the current defending player
         }
     }
@@ -292,51 +283,65 @@ var controller = (function(UICtrl, PlayerCtrl) {
         let gameOver = PlayerCtrl.evaluateEndCondition(player);
                 if (gameOver) {
                     console.log(gameOver);
-                    return true; ////// end game 
+                    return gameOver; ////// end game 
                 } else { //// else next round
-                    // alternateAttackingPlayer();
-                    // hideAllOptions(allButtons);
-                    // attackPhase();
+                    console.log("Game continues...");
+                    return false;
                 }
     }
     var attackPhase = function(defendingPlayer) {
-        // need to make determineOppositePlayer a public function
-        console.log('defending Player', defendingPlayer);
+        
+        UICtrl.hideAllOptions();
+        // console.log('defending Player', defendingPlayer);
         let attackingPlayer = PlayerCtrl.getOppositePlayer(defendingPlayer);
-        console.log('attacking player', attackingPlayer);
+        // console.log('attacking player', attackingPlayer);
+        // update hp for both players
+        UICtrl.updateHitPoints(attackingPlayer, PlayerCtrl.getHitPoints(attackingPlayer));
+        UICtrl.updateHitPoints(defendingPlayer, PlayerCtrl.getHitPoints(defendingPlayer));
+        // update special points for both players
+        UICtrl.updateSpecialPoints(attackingPlayer, PlayerCtrl.getSpecialPoints(attackingPlayer));
+        UICtrl.updateSpecialPoints(defendingPlayer, PlayerCtrl.getSpecialPoints(defendingPlayer));
         console.log("Begin Attack Phase");
         // identify active player in UI
-        // document.querySelector(`.player-${defendingPlayer}-name`).classList.remove('active');
-        // document.querySelector(`.player-${attackingPlayer}-name`).classList.add('active');
-        // // reveal available attack options
-        // // reveal any available options .style.display = 'block';
-        // // when button clicked the result is logged and then phase 2 defending players turn
-        //document.querySelectorAll(".attack-button")[attackingPlayer].parentNode.style.display = 'block';
-        // if (specialPoints[attackingPlayer] > 0) {
-        //     document.querySelectorAll(".attack-button-focus")[attackingPlayer].parentNode.style.display = 'block';
-        // }
-        // if (specialPoints[attackingPlayer] >= 3) {
-        //     document.querySelectorAll(".spell-button-fire")[attackingPlayer].parentNode.style.display = 'block';
-        // }
+        document.querySelector(`.player-${defendingPlayer}-name`).classList.remove('active');
+        document.querySelector(`.player-${attackingPlayer}-name`).classList.add('active');
+        // reveal available attack options
+        // reveal any available options .style.display = 'block';
+        // when button clicked the result is logged and then phase 2 defending players turn
+        document.querySelectorAll(".attack-button")[attackingPlayer].parentNode.style.display = 'block';
+        let specialPoints = PlayerCtrl.getSpecialPoints(attackingPlayer);
+        if (specialPoints > 0) {
+            document.querySelectorAll(".attack-button-focus")[attackingPlayer].parentNode.style.display = 'block';
+        }
+        if (specialPoints >= 3) {
+            document.querySelectorAll(".spell-button-fire")[attackingPlayer].parentNode.style.display = 'block';
+        }
     }
 
     var defendPhase = function(attackingPlayer) {
-        console.log('attacking player', attackingPlayer);
+        UICtrl.hideAllOptions();
+        // console.log('attacking player', attackingPlayer);
         let defendingPlayer = PlayerCtrl.getOppositePlayer(attackingPlayer);
-        console.log('Defending Player', defendingPlayer);
-        console.log("Begin Defend Phase");
-        // document.querySelector(`.player-${attackingPlayer}-name`).classList.remove('active');
-        // document.querySelector(`.player-${defendingPlayer}-name`).classList.add('active');
-        // // reveal available defending options
-        // document.querySelectorAll(".defend-button")[defendingPlayer].parentNode.style.display = 'block';
-        
-        // if (specialPoints[defendingPlayer] >=2) {
-        //     document.querySelectorAll(".spell-button-heal")[defendingPlayer].parentNode.style.display = 'block';
-        // }
+        // update hp for both players
+        UICtrl.updateHitPoints(attackingPlayer, PlayerCtrl.getHitPoints(attackingPlayer));
+        UICtrl.updateHitPoints(defendingPlayer, PlayerCtrl.getHitPoints(defendingPlayer));
+        // update special points for both players
+        UICtrl.updateSpecialPoints(attackingPlayer, PlayerCtrl.getSpecialPoints(attackingPlayer));
+        UICtrl.updateSpecialPoints(defendingPlayer, PlayerCtrl.getSpecialPoints(defendingPlayer));
+        // console.log('Defending Player', defendingPlayer);
+        // console.log("Begin Defend Phase");
+        document.querySelector(`.player-${attackingPlayer}-name`).classList.remove('active');
+        document.querySelector(`.player-${defendingPlayer}-name`).classList.add('active');
+        // reveal available defending options
+        document.querySelectorAll(".defend-button")[defendingPlayer].parentNode.style.display = 'block';
+        let specialPoints = PlayerCtrl.getSpecialPoints(defendingPlayer);
+        if (specialPoints >=2) {
+            document.querySelectorAll(".spell-button-heal")[defendingPlayer].parentNode.style.display = 'block';
+        }
 
-        // if (specialPoints[defendingPlayer] >= 4) {
-        //     document.querySelectorAll(".defend-button-diamond")[defendingPlayer].parentNode.style.display = 'block';
-        // }
+        if (specialPoints >= 4) {
+            document.querySelectorAll(".defend-button-diamond")[defendingPlayer].parentNode.style.display = 'block';
+        }
     }
 
     var createGameLogActionNode = function(player, ability, roll) {
@@ -378,7 +383,7 @@ var controller = (function(UICtrl, PlayerCtrl) {
                 PlayerCtrl.setRolls(roll, player);
                 // insert Log Node into DOM Game Log 
                 let logNode = createGameLogActionNode(player, ability, roll);
-                UIController.displayToLog(logNode);
+                UICtrl.displayToLog(logNode);
                 defendPhase(player);
             });
 
@@ -388,14 +393,13 @@ var controller = (function(UICtrl, PlayerCtrl) {
                 //subtract the cost of the ability to special points
                 let specialPoints = handleSpecialPoints(player, ability);
                 // Update UI to reflect change in model data
-                UIController.updateSpecialPoints(player, specialPoints);
+                UICtrl.updateSpecialPoints(player, specialPoints);
                 let roll = PlayerCtrl.rollDice(ability.dicePower, PlayerCtrl.getSides());
                 // Update data with current roll
                 PlayerCtrl.setRolls(roll, player);
                 let logNode = createGameLogActionNode(player, ability, roll);
-                UIController.displayToLog(logNode);
-                //begin defend phase
-                // hideAllOptions(allButtons);
+                UICtrl.displayToLog(logNode);
+                //begin defend phase                
                 defendPhase(player);
             });
 
@@ -404,14 +408,13 @@ var controller = (function(UICtrl, PlayerCtrl) {
                 let specialPoints = handleSpecialPoints(player, ability);
                 // this should be a call to the UI Controller
                 // document.querySelector(`.player-${player}-special`).textContent = specialPoints;
-                UIController.updateSpecialPoints(player, specialPoints);
+                UICtrl.updateSpecialPoints(player, specialPoints);
                 let roll = PlayerCtrl.rollDice(ability.dicePower, PlayerCtrl.getSides());
                 //console.log("Player 2 Attack Roll", roll);
                 let logNode = createGameLogActionNode(player, ability, roll);
                 // logDisplay.insertBefore(logNode, logDisplay.firstChild);
-                UIController.displayToLog(logNode);
+                UICtrl.displayToLog(logNode);
                 // begin defend phase
-                //hideAllOptions(allButtons);
                 defendPhase(player);
             });
 
@@ -420,16 +423,17 @@ var controller = (function(UICtrl, PlayerCtrl) {
                 roll = PlayerCtrl.rollDice(ability.dicePower, PlayerCtrl.getSides());
                 
                 let logNode = createGameLogActionNode(player, ability,roll);
-                UIController.displayToLog(logNode);
+                UICtrl.displayToLog(logNode);
                 PlayerCtrl.setRolls(roll, player);
                 handleResult(player, DOM.buttons.defendButtons);
-                
-                if (!handleGameOver(player)) {
-                    //alternateAttackingPlayer();
-                    //hideAllOptions(allButtons);
-                    attackPhase(player);
+                let gameOver = handleGameOver(player);
+                if (!gameOver) {
+                    // alternateAttackingPlayer();
+                    let nextAttackingPlayer = PlayerCtrl.getOppositePlayer(player);
+                    attackPhase(nextAttackingPlayer);
                 } else {
-                    hideAllOptions(allButtons);
+                    // display gameOver to UI
+                    UICtrl.hideAllOptions();
                 }
             });
 
@@ -439,22 +443,30 @@ var controller = (function(UICtrl, PlayerCtrl) {
                 let specialPoints = handleSpecialPoints(player, ability);
                 // handle with UI
                 // document.querySelector(`.player-${player}-special`).textContent = specialPoints;
-                UIController.updateSpecialPoints(player, specialPoints);
+                UICtrl.updateSpecialPoints(player, specialPoints);
                 let roll = PlayerCtrl.rollDice(ability.dicePower, PlayerCtrl.getSides());
                 PlayerCtrl.setRolls(roll, player);
                 let logNode = createGameLogActionNode(player, ability, roll);
                 
-                UIController.displayToLog(logNode);
+                UICtrl.displayToLog(logNode);
                 
                 handleResult(player, DOM.buttons.diamondButtons);
-                
-                if (!handleGameOver(player)) {
-                    //alternateAttackingPlayer();
-                    //hideAllOptions(allButtons);
-                    attackPhase(player);
+                let gameOver = handleGameOver(player);
+                if (!gameOver) {
+                    // alternateAttackingPlayer();
+                    let nextAttackingPlayer = PlayerCtrl.getOppositePlayer(player);
+                    attackPhase(nextAttackingPlayer);
                 } else {
-                    hideAllOptions(allButtons);
-                }   
+                    // display gameOver to UI
+                    UICtrl.hideAllOptions();
+                }
+                // if (!handleGameOver(player)) {
+                //     //alternateAttackingPlayer();
+                //     //hideAllOptions(allButtons);
+                //     attackPhase(player);
+                // } else {
+                //     hideAllOptions(allButtons);
+                // }   
             });
 
             document.querySelectorAll(DOM.buttons.healButtons)[player].addEventListener("click", function() {
@@ -462,19 +474,28 @@ var controller = (function(UICtrl, PlayerCtrl) {
                 let ability = PlayerCtrl.getAbilities().heal;
                 let specialPoints = handleSpecialPoints(player, ability);
                 // document.querySelector(`.player-${player}-special`).textContent = specialPoints;                
-                UIController.updateSpecialPoints(player, specialPoints);
+                UICtrl.updateSpecialPoints(player, specialPoints);
                 let roll = PlayerCtrl.rollDice(ability.dicePower, PlayerCtrl.getSides());
                 PlayerCtrl.setRolls(roll, player);
                 let logNode = createGameLogActionNode(player, ability, roll);
-                UIController.displayToLog(logNode);
+                UICtrl.displayToLog(logNode);
                 handleResult(player, DOM.buttons.healButtons);
-                if (!handleGameOver(player)) {
-                    //alternateAttackingPlayer();
-                    //hideAllOptions(allButtons);
-                    attackPhase(player);
+                let gameOver = handleGameOver(player);
+                if (!gameOver) {
+                    // alternateAttackingPlayer();
+                    let nextAttackingPlayer = PlayerCtrl.getOppositePlayer(player);
+                    attackPhase(nextAttackingPlayer);
                 } else {
-                    hideAllOptions(allButtons);
+                    // display gameOver to UI
+                    UICtrl.hideAllOptions();
                 }
+                // if (!handleGameOver(player)) {
+                //     //alternateAttackingPlayer();
+                //     //hideAllOptions(allButtons);
+                //     attackPhase(player);
+                // } else {
+                //     hideAllOptions(allButtons);
+                // }
             });
         }
     }
@@ -482,17 +503,17 @@ var controller = (function(UICtrl, PlayerCtrl) {
     return {
 
         init: function() {
-            let data = PlayerCtrl.getData();
+            //let data = PlayerCtrl.getData();
             var DOM =  UICtrl.getDOMstrings();
-            data.startingPlayer = data.players[0];
+            //data.startingPlayer = data.players[0];
             setupEventListeners(DOM);
-            //UICtrl.hideAllOptions(DOM.buttons);
+            UICtrl.hideAllOptions();
             console.log("The application has started.");
-            return data;
+            // return data;
         },
-        gameLoop: function(data) {
+        gameLoop: function() {
             // First Player show available buttons
-            attackPhase(data.startingPlayer);
+            attackPhase(PlayerCtrl.getStartingPlayer()+1);
             // Player Clicks Button
             // Hide All Options
             // Check for Human Player 2 if A make selection from a set of choices depends on available sp.
@@ -509,4 +530,4 @@ var controller = (function(UICtrl, PlayerCtrl) {
 })(UIController, playerController);
 
 controller.init();
-//controller.gameLoop(controller.init());
+controller.gameLoop();
