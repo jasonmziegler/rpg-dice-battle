@@ -191,7 +191,7 @@ var playerController = (function() {
         },
         evaluateEndCondition: function (defendingPlayer) {
             //console.log(data.hitPoints[defendingPlayer]);
-            if (data.hitPoints[defendingPlayer] >= 0) {
+            if (data.hitPoints[defendingPlayer] > 0) {
                 return false;
             } else {
                 return `GAME OVER - Player ${defendingPlayer+1} has been slain.`;
@@ -257,6 +257,15 @@ var UIController = (function() {
             let specialPointsDisplay = DOMstrings[playerToUpdate];
             document.querySelector(specialPointsDisplay).textContent = specialPoints;
         },
+        toggleActivePlayer: function (player) {
+            document.querySelector(`.player-${player}-name`).classList.toggle('active');
+        },
+        setActivePlayer: function (player) {
+            document.querySelector(`.player-${player}-name`).classList.add('active');
+        },
+        removeActivePlayer: function (player) {
+            document.querySelector(`.player-${player}-name`).classList.remove('active');
+        },
         displayToLog: function (logNode) {
             // this method will create a text node with a given string and display it to the game log
             logDisplay = document.querySelector(DOMstrings.logDisplay);
@@ -303,8 +312,10 @@ var controller = (function(UICtrl, PlayerCtrl) {
         UICtrl.updateSpecialPoints(defendingPlayer, PlayerCtrl.getSpecialPoints(defendingPlayer));
         console.log("Begin Attack Phase");
         // identify active player in UI
-        document.querySelector(`.player-${defendingPlayer}-name`).classList.remove('active');
-        document.querySelector(`.player-${attackingPlayer}-name`).classList.add('active');
+        // document.querySelector(`.player-${defendingPlayer}-name`).classList.remove('active');
+        // document.querySelector(`.player-${attackingPlayer}-name`).classList.add('active');
+        UICtrl.removeActivePlayer(defendingPlayer);
+        UICtrl.setActivePlayer(attackingPlayer);
         // reveal available attack options
         // reveal any available options .style.display = 'block';
         // when button clicked the result is logged and then phase 2 defending players turn
@@ -330,8 +341,10 @@ var controller = (function(UICtrl, PlayerCtrl) {
         UICtrl.updateSpecialPoints(defendingPlayer, PlayerCtrl.getSpecialPoints(defendingPlayer));
         // console.log('Defending Player', defendingPlayer);
         // console.log("Begin Defend Phase");
-        document.querySelector(`.player-${attackingPlayer}-name`).classList.remove('active');
-        document.querySelector(`.player-${defendingPlayer}-name`).classList.add('active');
+        // document.querySelector(`.player-${attackingPlayer}-name`).classList.remove('active');
+        // document.querySelector(`.player-${defendingPlayer}-name`).classList.add('active');
+        UICtrl.removeActivePlayer(attackingPlayer);
+        UICtrl.setActivePlayer(defendingPlayer);
         // reveal available defending options
         document.querySelectorAll(".defend-button")[defendingPlayer].parentNode.style.display = 'block';
         let specialPoints = PlayerCtrl.getSpecialPoints(defendingPlayer);
@@ -513,7 +526,9 @@ var controller = (function(UICtrl, PlayerCtrl) {
         },
         gameLoop: function() {
             // First Player show available buttons
-            attackPhase(PlayerCtrl.getStartingPlayer()+1);
+            let startingPlayer = PlayerCtrl.getStartingPlayer() + 1;
+            UICtrl.toggleActivePlayer(startingPlayer);
+            attackPhase(startingPlayer);
             // Player Clicks Button
             // Hide All Options
             // Check for Human Player 2 if A make selection from a set of choices depends on available sp.
