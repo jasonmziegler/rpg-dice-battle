@@ -319,36 +319,37 @@ var controller = (function(UICtrl, PlayerCtrl) {
         //console.log("Begin Attack Phase");
         UICtrl.hideAllOptions();
         let attackingPlayer = PlayerCtrl.getOppositePlayer(defendingPlayer);
+        let specialPointsAttackingPlayer = PlayerCtrl.getSpecialPoints(attackingPlayer);
         // update hp for both players
         UICtrl.updateHitPoints(attackingPlayer, PlayerCtrl.getHitPoints(attackingPlayer));
         UICtrl.updateHitPoints(defendingPlayer, PlayerCtrl.getHitPoints(defendingPlayer));
         // update special points for both players
-        UICtrl.updateSpecialPoints(attackingPlayer, PlayerCtrl.getSpecialPoints(attackingPlayer));
+        UICtrl.updateSpecialPoints(attackingPlayer, specialPointsAttackingPlayer);
         UICtrl.updateSpecialPoints(defendingPlayer, PlayerCtrl.getSpecialPoints(defendingPlayer));
         // identify active player in UI
         UICtrl.removeActivePlayer(defendingPlayer);
         UICtrl.setActivePlayer(attackingPlayer);
-        let specialPoints = PlayerCtrl.getSpecialPoints(attackingPlayer);
+        
         // reveal available attack options
-        UICtrl.displayActiveAttackButtons(attackingPlayer, specialPoints);
+        UICtrl.displayActiveAttackButtons(attackingPlayer, specialPointsAttackingPlayer);
     }
 
     var defendPhase = function(attackingPlayer) {
         // console.log("Begin Defend Phase");
         UICtrl.hideAllOptions();
         let defendingPlayer = PlayerCtrl.getOppositePlayer(attackingPlayer);
+        let specialPointsDefendingPlayer = PlayerCtrl.getSpecialPoints(defendingPlayer);
         // update hp for both players
         UICtrl.updateHitPoints(attackingPlayer, PlayerCtrl.getHitPoints(attackingPlayer));
         UICtrl.updateHitPoints(defendingPlayer, PlayerCtrl.getHitPoints(defendingPlayer));
         // update special points for both players
         UICtrl.updateSpecialPoints(attackingPlayer, PlayerCtrl.getSpecialPoints(attackingPlayer));
-        UICtrl.updateSpecialPoints(defendingPlayer, PlayerCtrl.getSpecialPoints(defendingPlayer));
+        UICtrl.updateSpecialPoints(defendingPlayer, specialPointsDefendingPlayer);
         // Update active player
         UICtrl.removeActivePlayer(attackingPlayer);
         UICtrl.setActivePlayer(defendingPlayer);
         // // reveal available defending options
-        let specialPoints = PlayerCtrl.getSpecialPoints(defendingPlayer);
-        UICtrl.displayActiveDefendButtons(defendingPlayer, specialPoints);
+        UICtrl.displayActiveDefendButtons(defendingPlayer, specialPointsDefendingPlayer);
     }
 
     var createGameLogActionNode = function(player, ability, roll) {
@@ -381,7 +382,6 @@ var controller = (function(UICtrl, PlayerCtrl) {
         
         let playerAmount = PlayerCtrl.getPlayerAmount().length;
         //could loop through every action type and create an event listener for both of the button for each type using a for in loop, using a single add event listener function
-        // todo change loop variable to "player" instead of generic i
         for (let player = 0; player < playerAmount; player++) {
             
             document.querySelectorAll(DOM.buttons.attackButtons)[player].addEventListener("click", function() {
