@@ -297,9 +297,10 @@ var UIController = (function() {
 var controller = (function(UICtrl, PlayerCtrl) {
     var handleResult = function(player, buttonType) {
         result = PlayerCtrl.getAttackResult(player);
-        console.log("result", result);
+        //console.log("result", result);
         // this will call the log result function
-        console.log(PlayerCtrl.evalutateResult(result, player, buttonType));
+        // console.log(PlayerCtrl.evalutateResult(result, player, buttonType));
+        return PlayerCtrl.evalutateResult(result, player, buttonType);
     }
 
     var handleGameOver = function(player) {
@@ -432,7 +433,10 @@ var controller = (function(UICtrl, PlayerCtrl) {
                 let logNode = createGameLogActionNode(player, ability,roll);
                 UICtrl.displayToLog(logNode);
                 PlayerCtrl.setRolls(roll, player);
-                handleResult(player, DOM.buttons.defendButtons);
+                let resultNode = document.createElement('p');
+                resultNode.appendChild(document.createTextNode(handleResult(player, DOM.buttons.defendButtons)));
+                UICtrl.displayToLog(resultNode);
+                // handleResult(player, DOM.buttons.defendButtons);
                 let gameOver = handleGameOver(player);
                 if (!gameOver) {
                     // alternateAttackingPlayer();
@@ -456,8 +460,10 @@ var controller = (function(UICtrl, PlayerCtrl) {
                 let logNode = createGameLogActionNode(player, ability, roll);
                 
                 UICtrl.displayToLog(logNode);
-                
-                handleResult(player, DOM.buttons.diamondButtons);
+                let resultNode = document.createElement('p');
+                resultNode.appendChild(document.createTextNode(handleResult(player, DOM.buttons.diamondButtons)));
+                UICtrl.displayToLog(resultNode);
+                // handleResult(player, DOM.buttons.diamondButtons);
                 let gameOver = handleGameOver(player);
                 if (!gameOver) {
                     // alternateAttackingPlayer();
@@ -486,7 +492,10 @@ var controller = (function(UICtrl, PlayerCtrl) {
                 PlayerCtrl.setRolls(roll, player);
                 let logNode = createGameLogActionNode(player, ability, roll);
                 UICtrl.displayToLog(logNode);
-                handleResult(player, DOM.buttons.healButtons);
+                let resultNode = document.createElement('p');
+                resultNode.appendChild(document.createTextNode(handleResult(player, DOM.buttons.healButtons)));
+                UICtrl.displayToLog(resultNode);
+                // handleResult(player, DOM.buttons.healButtons);
                 let gameOver = handleGameOver(player);
                 if (!gameOver) {
                     // alternateAttackingPlayer();
