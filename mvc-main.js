@@ -303,10 +303,10 @@ var controller = (function(UICtrl, PlayerCtrl) {
         return PlayerCtrl.evalutateResult(result, player, buttonType);
     }
 
-    var handleGameOver = function(player) {
+    var evaluateGameOver = function(player) {
         let gameOver = PlayerCtrl.evaluateEndCondition(player);
                 if (gameOver) {
-                    console.log(gameOver);
+                    // console.log(gameOver);
                     let hitPoints = PlayerCtrl.getHitPoints(player);
                     UIController.updateHitPoints(player, hitPoints);
                     return gameOver; ////// end game 
@@ -314,6 +314,22 @@ var controller = (function(UICtrl, PlayerCtrl) {
                     console.log("Game continues...");
                     return false;
                 }
+    }
+
+    var handleGameOver = function(player) {
+        // handleResult(player, DOM.buttons.defendButtons);
+        let gameOver = evaluateGameOver(player);
+        if (!gameOver) {
+            // alternateAttackingPlayer();
+            let nextAttackingPlayer = PlayerCtrl.getOppositePlayer(player);
+            attackPhase(nextAttackingPlayer);
+        } else {
+            UICtrl.hideAllOptions();
+            // display gameOver to UI
+            let gameOverNode = document.createElement('p');
+            gameOverNode.appendChild(document.createTextNode(gameOver));
+            UICtrl.displayToLog(gameOverNode);                    
+        }
     }
     var attackPhase = function(defendingPlayer) {
         //console.log("Begin Attack Phase");
@@ -436,16 +452,7 @@ var controller = (function(UICtrl, PlayerCtrl) {
                 let resultNode = document.createElement('p');
                 resultNode.appendChild(document.createTextNode(handleResult(player, DOM.buttons.defendButtons)));
                 UICtrl.displayToLog(resultNode);
-                // handleResult(player, DOM.buttons.defendButtons);
-                let gameOver = handleGameOver(player);
-                if (!gameOver) {
-                    // alternateAttackingPlayer();
-                    let nextAttackingPlayer = PlayerCtrl.getOppositePlayer(player);
-                    attackPhase(nextAttackingPlayer);
-                } else {
-                    // display gameOver to UI
-                    UICtrl.hideAllOptions();
-                }
+                handleGameOver(player);
             });
 
             document.querySelectorAll(DOM.buttons.diamondButtons)[player].addEventListener("click", function() {
@@ -463,23 +470,7 @@ var controller = (function(UICtrl, PlayerCtrl) {
                 let resultNode = document.createElement('p');
                 resultNode.appendChild(document.createTextNode(handleResult(player, DOM.buttons.diamondButtons)));
                 UICtrl.displayToLog(resultNode);
-                // handleResult(player, DOM.buttons.diamondButtons);
-                let gameOver = handleGameOver(player);
-                if (!gameOver) {
-                    // alternateAttackingPlayer();
-                    let nextAttackingPlayer = PlayerCtrl.getOppositePlayer(player);
-                    attackPhase(nextAttackingPlayer);
-                } else {
-                    // display gameOver to UI
-                    UICtrl.hideAllOptions();
-                }
-                // if (!handleGameOver(player)) {
-                //     //alternateAttackingPlayer();
-                //     //hideAllOptions(allButtons);
-                //     attackPhase(player);
-                // } else {
-                //     hideAllOptions(allButtons);
-                // }   
+                handleGameOver(player);
             });
 
             document.querySelectorAll(DOM.buttons.healButtons)[player].addEventListener("click", function() {
@@ -495,23 +486,7 @@ var controller = (function(UICtrl, PlayerCtrl) {
                 let resultNode = document.createElement('p');
                 resultNode.appendChild(document.createTextNode(handleResult(player, DOM.buttons.healButtons)));
                 UICtrl.displayToLog(resultNode);
-                // handleResult(player, DOM.buttons.healButtons);
-                let gameOver = handleGameOver(player);
-                if (!gameOver) {
-                    // alternateAttackingPlayer();
-                    let nextAttackingPlayer = PlayerCtrl.getOppositePlayer(player);
-                    attackPhase(nextAttackingPlayer);
-                } else {
-                    // display gameOver to UI
-                    UICtrl.hideAllOptions();
-                }
-                // if (!handleGameOver(player)) {
-                //     //alternateAttackingPlayer();
-                //     //hideAllOptions(allButtons);
-                //     attackPhase(player);
-                // } else {
-                //     hideAllOptions(allButtons);
-                // }
+                handleGameOver(player);
             });
         }
     }
