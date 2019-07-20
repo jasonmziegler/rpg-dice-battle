@@ -39,6 +39,7 @@ var playerController = (function() {
             focus: {
                 name: "Focus Attack",
                 verb: "attacks with Focus",
+                type: "offense",
                 dicePower: FOCUS,
                 spCost: FOCUSCOST
             },
@@ -46,17 +47,20 @@ var playerController = (function() {
                 name: "Heal",
                 verb: "casts a Heal spell",
                 dicePower: HEAL,
+                type: "defense",
                 spCost: HEALCOST
             },
             fire: {
                 name: "Fire Ball",
                 verb: "casts Fire Ball spell",
+                type: "offense",
                 dicePower: FIRE,
                 spCost: FIRECOST
             },
             diamond: {
                 name: "Diamond Skin",
                 verb: "casts Diamond Skin",
+                type: "defense",
                 dicePower: DIAMOND,
                 spCost: DIAMONDCOST
             }
@@ -154,7 +158,7 @@ var playerController = (function() {
         },
         evalutateResult: function (result, defendingPlayer, buttonType) {
                 let attackingPlayer = determineOppositePlayer(defendingPlayer);
-                console.log(buttonType);            
+                //console.log(buttonType);            
                 if (result !== 0) {
                     if (result >= 1) {
                         // if Attack > Defend then 
@@ -213,12 +217,12 @@ var UIController = (function() {
         healCost: "heal-cost",
         fireCost: "fire-cost",
         buttons: { 
-            attackButtons: ".attack-button",
-            focusButtons: ".attack-button-focus",
-            defendButtons: ".defend-button",
-            diamondButtons: ".defend-button-diamond",
-            healButtons: ".spell-button-heal",
-            fireButtons: ".spell-button-fire"
+            attack: ".attack-button",
+            focus: ".attack-button-focus",
+            defend: ".defend-button",
+            diamond: ".defend-button-diamond",
+            heal: ".spell-button-heal",
+            fire: ".spell-button-fire"
         }
     };
 
@@ -269,22 +273,22 @@ var UIController = (function() {
         },
         displayActiveAttackButtons: function (attackingPlayer, specialPoints) {
             // when button clicked the result is logged and then phase 2 defending players turn
-            document.querySelectorAll(DOMstrings.buttons.attackButtons)[attackingPlayer].parentNode.style.display = 'block';            
+            document.querySelectorAll(DOMstrings.buttons.attack)[attackingPlayer].parentNode.style.display = 'block';            
             if (specialPoints > 0) {
-                document.querySelectorAll(DOMstrings.buttons.focusButtons)[attackingPlayer].parentNode.style.display = 'block';
+                document.querySelectorAll(DOMstrings.buttons.focus)[attackingPlayer].parentNode.style.display = 'block';
             }
             if (specialPoints >= 3) {
-                document.querySelectorAll(DOMstrings.buttons.fireButtons)[attackingPlayer].parentNode.style.display = 'block';
+                document.querySelectorAll(DOMstrings.buttons.fire)[attackingPlayer].parentNode.style.display = 'block';
             }
         },
         displayActiveDefendButtons: function (defendingPlayer, specialPoints) {
             //reveal available defending options
-            document.querySelectorAll(DOMstrings.buttons.defendButtons)[defendingPlayer].parentNode.style.display = 'block';
+            document.querySelectorAll(DOMstrings.buttons.defend)[defendingPlayer].parentNode.style.display = 'block';
             if (specialPoints >=2) {
-                document.querySelectorAll(DOMstrings.buttons.healButtons)[defendingPlayer].parentNode.style.display = 'block';
+                document.querySelectorAll(DOMstrings.buttons.heal)[defendingPlayer].parentNode.style.display = 'block';
             }
             if (specialPoints >= 4) {
-                document.querySelectorAll(DOMstrings.buttons.diamondButtons)[defendingPlayer].parentNode.style.display = 'block';
+                document.querySelectorAll(DOMstrings.buttons.diamond)[defendingPlayer].parentNode.style.display = 'block';
             }
         }
     }
@@ -303,7 +307,7 @@ var controller = (function(UICtrl, PlayerCtrl) {
                     UIController.updateHitPoints(player, hitPoints);
                     return gameOver;
                 } else { //// else next round
-                    console.log("Game continues...");
+                    //console.log("Game continues...");
                     return false;
                 }
     }
@@ -381,90 +385,123 @@ var controller = (function(UICtrl, PlayerCtrl) {
 
     var setupEventListeners = function(DOM) {
         
-        logDisplay = document.querySelector(DOM.logDisplay);
+        //let logDisplay = document.querySelector(DOM.logDisplay);
         let playerAmount = PlayerCtrl.getPlayerAmount().length;
-        //could loop through every action type and create an event listener for both of the button for each type using a for in loop, using a single add event listener function
+        // could loop through every action type and create an event listener for both of the button for each type using a for in loop, using a single add event listener function
+        // need to dynamically loop through buttons. DOM.buttons[attribute] attribute example "attackButtons" change to "attack"
+        // then use the ability.name attribute as the attribute variable.
+        // for each ability create add an event listener 
+        // for (let property in DOM.buttons) {
+        //     console.log(`${property}: ${DOM.buttons[property]}`);
+        //     console.log(`${property}: ${PlayerCtrl.getAbilities()[property]}`); 
+        // }
+        // for (ability in PlayerCtrl.getAbilities()) {
+        //     console.log(`${ability}: ${PlayerCtrl.getAbilities()[ability]}`);
+        // }
         for (let player = 0; player < playerAmount; player++) {
-            document.querySelectorAll(DOM.buttons.attackButtons)[player].addEventListener("click", function() {
-                let ability = PlayerCtrl.getAbilities().attack;
-                let roll = PlayerCtrl.rollDice(ability.dicePower, PlayerCtrl.getSides());
-                PlayerCtrl.setRolls(roll, player);
-                // insert Log Node into DOM Game Log 
-                let logNode = createGameLogActionNode(player, ability, roll);
-                UICtrl.displayToLog(logNode);
-                defendPhase(player);
-            });
-
-            document.querySelectorAll(DOM.buttons.focusButtons)[player].addEventListener("click", function() {             
-                let ability = PlayerCtrl.getAbilities().focus;
-                //subtract the cost of the ability to special points
-                let specialPoints = handleSpecialPoints(player, ability);
-                // Update UI to reflect change in model data
-                UICtrl.updateSpecialPoints(player, specialPoints);
-                let roll = PlayerCtrl.rollDice(ability.dicePower, PlayerCtrl.getSides());
-                // Update data with current roll
-                PlayerCtrl.setRolls(roll, player);
-                let logNode = createGameLogActionNode(player, ability, roll);
-                UICtrl.displayToLog(logNode);
-                //begin defend phase                
-                defendPhase(player);
-            });
-
-            document.querySelectorAll(DOM.buttons.fireButtons)[player].addEventListener("click", function() {
-                let ability = PlayerCtrl.getAbilities().fire;
-                let specialPoints = handleSpecialPoints(player, ability);
-                // this should be a call to the UI Controller
-                UICtrl.updateSpecialPoints(player, specialPoints);
-                let roll = PlayerCtrl.rollDice(ability.dicePower, PlayerCtrl.getSides());
-                PlayerCtrl.setRolls(roll, player);
-                //console.log("Player 2 Attack Roll", roll);
-                let logNode = createGameLogActionNode(player, ability, roll);
-                UICtrl.displayToLog(logNode);
-                // begin defend phase
-                defendPhase(player);
-            });
-
-            document.querySelectorAll(DOM.buttons.defendButtons)[player].addEventListener("click", function() {
-                let ability = PlayerCtrl.getAbilities().defend;
-                let roll = PlayerCtrl.rollDice(ability.dicePower, PlayerCtrl.getSides());
-                let logNode = createGameLogActionNode(player, ability,roll);
-                UICtrl.displayToLog(logNode);
-                PlayerCtrl.setRolls(roll, player);
-                let resultNode = document.createElement('p');
-                resultNode.appendChild(document.createTextNode(handleResult(player, DOM.buttons.defendButtons)));
-                UICtrl.displayToLog(resultNode);
-                handleGameOver(player);
-            });
-
-            document.querySelectorAll(DOM.buttons.diamondButtons)[player].addEventListener("click", function() {
-                let ability = PlayerCtrl.getAbilities().diamond;
-                let specialPoints = handleSpecialPoints(player, ability);
-                // handle with UI
-                UICtrl.updateSpecialPoints(player, specialPoints);
-                let roll = PlayerCtrl.rollDice(ability.dicePower, PlayerCtrl.getSides());
-                PlayerCtrl.setRolls(roll, player);
-                let logNode = createGameLogActionNode(player, ability, roll);
+            
+            for (let property in DOM.buttons) {
                 
-                UICtrl.displayToLog(logNode);
-                let resultNode = document.createElement('p');
-                resultNode.appendChild(document.createTextNode(handleResult(player, DOM.buttons.diamondButtons)));
-                UICtrl.displayToLog(resultNode);
-                handleGameOver(player);
-            });
+                document.querySelectorAll(DOM.buttons[property])[player].addEventListener("click", function() {
+                    let ability = PlayerCtrl.getAbilities()[property];
+                    //need to add updateSpecialPoints (will help with event listener creation loop)
+                    let roll = PlayerCtrl.rollDice(ability.dicePower, PlayerCtrl.getSides());
+                    PlayerCtrl.setRolls(roll, player);
+                    let logNode = createGameLogActionNode(player, ability,roll);
+                    UICtrl.displayToLog(logNode);
+                    // need to add an if block here to determine if attack or defense type ability
+                    if (ability.type === "defense") {
+                        let resultNode = document.createElement('p');
+                        resultNode.appendChild(document.createTextNode(handleResult(player, DOM.buttons[property])));
+                        UICtrl.displayToLog(resultNode);
+                        handleGameOver(player);
+                    } else {
+                        defendPhase(player);
+                    }
+                });
+            }
+            
+            // document.querySelectorAll(DOM.buttons.attackButtons)[player].addEventListener("click", function() {
+            //     let ability = PlayerCtrl.getAbilities().attack;
+            //     let roll = PlayerCtrl.rollDice(ability.dicePower, PlayerCtrl.getSides());
+            //     PlayerCtrl.setRolls(roll, player);
+            //     // insert Log Node into DOM Game Log 
+            //     let logNode = createGameLogActionNode(player, ability, roll);
+            //     UICtrl.displayToLog(logNode);
+            //     defendPhase(player);
+            // });
 
-            document.querySelectorAll(DOM.buttons.healButtons)[player].addEventListener("click", function() {           
-                let ability = PlayerCtrl.getAbilities().heal;
-                let specialPoints = handleSpecialPoints(player, ability);
-                UICtrl.updateSpecialPoints(player, specialPoints);
-                let roll = PlayerCtrl.rollDice(ability.dicePower, PlayerCtrl.getSides());
-                PlayerCtrl.setRolls(roll, player);
-                let logNode = createGameLogActionNode(player, ability, roll);
-                UICtrl.displayToLog(logNode);
-                let resultNode = document.createElement('p');
-                resultNode.appendChild(document.createTextNode(handleResult(player, DOM.buttons.healButtons)));
-                UICtrl.displayToLog(resultNode);
-                handleGameOver(player);
-            });
+            // document.querySelectorAll(DOM.buttons.focusButtons)[player].addEventListener("click", function() {             
+            //     let ability = PlayerCtrl.getAbilities().focus;
+            //     //subtract the cost of the ability to special points
+            //     let specialPoints = handleSpecialPoints(player, ability);
+            //     // Update UI to reflect change in model data
+            //     UICtrl.updateSpecialPoints(player, specialPoints);
+            //     let roll = PlayerCtrl.rollDice(ability.dicePower, PlayerCtrl.getSides());
+            //     // Update data with current roll
+            //     PlayerCtrl.setRolls(roll, player);
+            //     let logNode = createGameLogActionNode(player, ability, roll);
+            //     UICtrl.displayToLog(logNode);
+            //     //begin defend phase                
+            //     defendPhase(player);
+            // });
+
+            // document.querySelectorAll(DOM.buttons.fireButtons)[player].addEventListener("click", function() {
+            //     let ability = PlayerCtrl.getAbilities().fire;
+            //     let specialPoints = handleSpecialPoints(player, ability);
+            //     // this should be a call to the UI Controller
+            //     UICtrl.updateSpecialPoints(player, specialPoints);
+            //     let roll = PlayerCtrl.rollDice(ability.dicePower, PlayerCtrl.getSides());
+            //     PlayerCtrl.setRolls(roll, player);
+            //     let logNode = createGameLogActionNode(player, ability, roll);
+            //     UICtrl.displayToLog(logNode);
+            //     // begin defend phase
+            //     defendPhase(player);
+            // });
+
+            // document.querySelectorAll(DOM.buttons.defendButtons)[player].addEventListener("click", function() {
+            //     let ability = PlayerCtrl.getAbilities().defend;
+            //     //need to add updateSpecialPoints (will help with event listener creation loop)
+            //     let roll = PlayerCtrl.rollDice(ability.dicePower, PlayerCtrl.getSides());
+            //     PlayerCtrl.setRolls(roll, player);
+            //     let logNode = createGameLogActionNode(player, ability,roll);
+            //     UICtrl.displayToLog(logNode);
+            //     // need to add an if block here to determine if attack or defense type ability
+            //     let resultNode = document.createElement('p');
+            //     resultNode.appendChild(document.createTextNode(handleResult(player, DOM.buttons.defendButtons)));
+            //     UICtrl.displayToLog(resultNode);
+            //     handleGameOver(player);
+            // });
+
+            // document.querySelectorAll(DOM.buttons.diamondButtons)[player].addEventListener("click", function() {
+            //     let ability = PlayerCtrl.getAbilities().diamond;
+            //     let specialPoints = handleSpecialPoints(player, ability);
+            //     // handle with UI
+            //     UICtrl.updateSpecialPoints(player, specialPoints);
+            //     let roll = PlayerCtrl.rollDice(ability.dicePower, PlayerCtrl.getSides());
+            //     PlayerCtrl.setRolls(roll, player);
+            //     let logNode = createGameLogActionNode(player, ability, roll);
+                
+            //     UICtrl.displayToLog(logNode);
+            //     let resultNode = document.createElement('p');
+            //     resultNode.appendChild(document.createTextNode(handleResult(player, DOM.buttons.diamondButtons)));
+            //     UICtrl.displayToLog(resultNode);
+            //     handleGameOver(player);
+            // });
+
+            // document.querySelectorAll(DOM.buttons.healButtons)[player].addEventListener("click", function() {           
+            //     let ability = PlayerCtrl.getAbilities().heal;
+            //     let specialPoints = handleSpecialPoints(player, ability);
+            //     UICtrl.updateSpecialPoints(player, specialPoints);
+            //     let roll = PlayerCtrl.rollDice(ability.dicePower, PlayerCtrl.getSides());
+            //     PlayerCtrl.setRolls(roll, player);
+            //     let logNode = createGameLogActionNode(player, ability, roll);
+            //     UICtrl.displayToLog(logNode);
+            //     let resultNode = document.createElement('p');
+            //     resultNode.appendChild(document.createTextNode(handleResult(player, DOM.buttons.healButtons)));
+            //     UICtrl.displayToLog(resultNode);
+            //     handleGameOver(player);
+            // });
         }
     }
 
