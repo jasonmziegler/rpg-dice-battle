@@ -385,7 +385,6 @@ var controller = (function(UICtrl, PlayerCtrl) {
 
     var setupEventListeners = function(DOM) {
         
-        //let logDisplay = document.querySelector(DOM.logDisplay);
         let playerAmount = PlayerCtrl.getPlayerAmount().length;
         // loop through every action type and create an event listener for both of the button for each type using a for in loop, using a single add event listener function
         // need to dynamically loop through buttons. DOM.buttons[attribute] attribute example "attackButtons" change to "attack"
@@ -395,7 +394,8 @@ var controller = (function(UICtrl, PlayerCtrl) {
             for (let property in DOM.buttons) {                
                 document.querySelectorAll(DOM.buttons[property])[player].addEventListener("click", function() {
                     let ability = PlayerCtrl.getAbilities()[property];
-                    //need to add updateSpecialPoints (will help with event listener creation loop)
+                    let specialPoints = handleSpecialPoints(player, ability);
+                    UICtrl.updateSpecialPoints(player, specialPoints);
                     let roll = PlayerCtrl.rollDice(ability.dicePower, PlayerCtrl.getSides());
                     PlayerCtrl.setRolls(roll, player);
                     let logNode = createGameLogActionNode(player, ability,roll);
