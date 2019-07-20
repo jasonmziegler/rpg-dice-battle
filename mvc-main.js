@@ -387,21 +387,12 @@ var controller = (function(UICtrl, PlayerCtrl) {
         
         //let logDisplay = document.querySelector(DOM.logDisplay);
         let playerAmount = PlayerCtrl.getPlayerAmount().length;
-        // could loop through every action type and create an event listener for both of the button for each type using a for in loop, using a single add event listener function
+        // loop through every action type and create an event listener for both of the button for each type using a for in loop, using a single add event listener function
         // need to dynamically loop through buttons. DOM.buttons[attribute] attribute example "attackButtons" change to "attack"
         // then use the ability.name attribute as the attribute variable.
         // for each ability create add an event listener 
-        // for (let property in DOM.buttons) {
-        //     console.log(`${property}: ${DOM.buttons[property]}`);
-        //     console.log(`${property}: ${PlayerCtrl.getAbilities()[property]}`); 
-        // }
-        // for (ability in PlayerCtrl.getAbilities()) {
-        //     console.log(`${ability}: ${PlayerCtrl.getAbilities()[ability]}`);
-        // }
-        for (let player = 0; player < playerAmount; player++) {
-            
-            for (let property in DOM.buttons) {
-                
+        for (let player = 0; player < playerAmount; player++) {            
+            for (let property in DOM.buttons) {                
                 document.querySelectorAll(DOM.buttons[property])[player].addEventListener("click", function() {
                     let ability = PlayerCtrl.getAbilities()[property];
                     //need to add updateSpecialPoints (will help with event listener creation loop)
@@ -409,7 +400,7 @@ var controller = (function(UICtrl, PlayerCtrl) {
                     PlayerCtrl.setRolls(roll, player);
                     let logNode = createGameLogActionNode(player, ability,roll);
                     UICtrl.displayToLog(logNode);
-                    // need to add an if block here to determine if attack or defense type ability
+                    // determine if attack or defense type ability
                     if (ability.type === "defense") {
                         let resultNode = document.createElement('p');
                         resultNode.appendChild(document.createTextNode(handleResult(player, DOM.buttons[property])));
@@ -420,88 +411,6 @@ var controller = (function(UICtrl, PlayerCtrl) {
                     }
                 });
             }
-            
-            // document.querySelectorAll(DOM.buttons.attackButtons)[player].addEventListener("click", function() {
-            //     let ability = PlayerCtrl.getAbilities().attack;
-            //     let roll = PlayerCtrl.rollDice(ability.dicePower, PlayerCtrl.getSides());
-            //     PlayerCtrl.setRolls(roll, player);
-            //     // insert Log Node into DOM Game Log 
-            //     let logNode = createGameLogActionNode(player, ability, roll);
-            //     UICtrl.displayToLog(logNode);
-            //     defendPhase(player);
-            // });
-
-            // document.querySelectorAll(DOM.buttons.focusButtons)[player].addEventListener("click", function() {             
-            //     let ability = PlayerCtrl.getAbilities().focus;
-            //     //subtract the cost of the ability to special points
-            //     let specialPoints = handleSpecialPoints(player, ability);
-            //     // Update UI to reflect change in model data
-            //     UICtrl.updateSpecialPoints(player, specialPoints);
-            //     let roll = PlayerCtrl.rollDice(ability.dicePower, PlayerCtrl.getSides());
-            //     // Update data with current roll
-            //     PlayerCtrl.setRolls(roll, player);
-            //     let logNode = createGameLogActionNode(player, ability, roll);
-            //     UICtrl.displayToLog(logNode);
-            //     //begin defend phase                
-            //     defendPhase(player);
-            // });
-
-            // document.querySelectorAll(DOM.buttons.fireButtons)[player].addEventListener("click", function() {
-            //     let ability = PlayerCtrl.getAbilities().fire;
-            //     let specialPoints = handleSpecialPoints(player, ability);
-            //     // this should be a call to the UI Controller
-            //     UICtrl.updateSpecialPoints(player, specialPoints);
-            //     let roll = PlayerCtrl.rollDice(ability.dicePower, PlayerCtrl.getSides());
-            //     PlayerCtrl.setRolls(roll, player);
-            //     let logNode = createGameLogActionNode(player, ability, roll);
-            //     UICtrl.displayToLog(logNode);
-            //     // begin defend phase
-            //     defendPhase(player);
-            // });
-
-            // document.querySelectorAll(DOM.buttons.defendButtons)[player].addEventListener("click", function() {
-            //     let ability = PlayerCtrl.getAbilities().defend;
-            //     //need to add updateSpecialPoints (will help with event listener creation loop)
-            //     let roll = PlayerCtrl.rollDice(ability.dicePower, PlayerCtrl.getSides());
-            //     PlayerCtrl.setRolls(roll, player);
-            //     let logNode = createGameLogActionNode(player, ability,roll);
-            //     UICtrl.displayToLog(logNode);
-            //     // need to add an if block here to determine if attack or defense type ability
-            //     let resultNode = document.createElement('p');
-            //     resultNode.appendChild(document.createTextNode(handleResult(player, DOM.buttons.defendButtons)));
-            //     UICtrl.displayToLog(resultNode);
-            //     handleGameOver(player);
-            // });
-
-            // document.querySelectorAll(DOM.buttons.diamondButtons)[player].addEventListener("click", function() {
-            //     let ability = PlayerCtrl.getAbilities().diamond;
-            //     let specialPoints = handleSpecialPoints(player, ability);
-            //     // handle with UI
-            //     UICtrl.updateSpecialPoints(player, specialPoints);
-            //     let roll = PlayerCtrl.rollDice(ability.dicePower, PlayerCtrl.getSides());
-            //     PlayerCtrl.setRolls(roll, player);
-            //     let logNode = createGameLogActionNode(player, ability, roll);
-                
-            //     UICtrl.displayToLog(logNode);
-            //     let resultNode = document.createElement('p');
-            //     resultNode.appendChild(document.createTextNode(handleResult(player, DOM.buttons.diamondButtons)));
-            //     UICtrl.displayToLog(resultNode);
-            //     handleGameOver(player);
-            // });
-
-            // document.querySelectorAll(DOM.buttons.healButtons)[player].addEventListener("click", function() {           
-            //     let ability = PlayerCtrl.getAbilities().heal;
-            //     let specialPoints = handleSpecialPoints(player, ability);
-            //     UICtrl.updateSpecialPoints(player, specialPoints);
-            //     let roll = PlayerCtrl.rollDice(ability.dicePower, PlayerCtrl.getSides());
-            //     PlayerCtrl.setRolls(roll, player);
-            //     let logNode = createGameLogActionNode(player, ability, roll);
-            //     UICtrl.displayToLog(logNode);
-            //     let resultNode = document.createElement('p');
-            //     resultNode.appendChild(document.createTextNode(handleResult(player, DOM.buttons.healButtons)));
-            //     UICtrl.displayToLog(resultNode);
-            //     handleGameOver(player);
-            // });
         }
     }
 
